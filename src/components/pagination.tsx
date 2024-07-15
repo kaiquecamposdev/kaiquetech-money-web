@@ -1,7 +1,7 @@
+import { Button } from '@/components/ui/button'
 import { TransactionsContext } from '@/contexts/TransactionsContext'
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 import { useContextSelector } from 'use-context-selector'
-import { Button, Content } from './styles'
 
 interface PaginationProps {
   pageIndex: number
@@ -34,8 +34,8 @@ export function Pagination({
   }
 
   return (
-    <Content>
-      <Button $variant="prev" onClick={() => onDecreasePage()}>
+    <div className="flex gap-2">
+      <Button onClick={() => onDecreasePage()}>
         <CaretLeft size={16} /> Anterior
       </Button>
       {Array.from({
@@ -44,17 +44,16 @@ export function Pagination({
         return (
           <Button
             key={i}
-            $variant="page"
-            $isActive={pageIndex === i}
+            className={pageIndex === i ? 'bg-primary' : 'bg-primary-foreground'}
             onClick={() => onChangePage(i)}
           >
             {i + 1}
           </Button>
         )
       })}
-      <Button $variant="next" onClick={() => onIncreasePage()}>
+      <Button onClick={() => onIncreasePage()}>
         Próximo <CaretRight size={16} />
       </Button>
-    </Content>
+    </div>
   )
 }

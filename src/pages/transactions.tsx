@@ -1,23 +1,13 @@
-import { Header } from '@/components/Header'
-import { Pagination } from '@/components/Pagination'
-import { SearchForm } from '@/components/SearchForm'
-import { Summary } from '@/components/Summary'
+import { Header } from '@/components/header'
+import { Pagination } from '@/components/pagination'
+import { SearchForm } from '@/components/searchForm'
+import { Summary } from '@/components/summary'
 import { TransactionsContext } from '@/contexts/TransactionsContext'
+import { cn } from '@/lib/utils'
 import { CreatePagination } from '@/utils/create-pagination'
 import { formatCurrency } from '@/utils/format-currency'
 import dayjs from 'dayjs'
 import { useContextSelector } from 'use-context-selector'
-import {
-  Container,
-  Content,
-  MainContainer,
-  MainContent,
-  PaginationContainer,
-  PriceHighlight,
-  TableContainer,
-  TableHead,
-  TransactionsTable,
-} from './styles'
 
 export function Transactions() {
   const { transactions, filteredTransactions, page, isLoading } =
@@ -36,22 +26,27 @@ export function Transactions() {
   const paginatedTransactions = CreatePagination(filteredTransactions)
 
   return (
-    <Container>
-      <Content>
+    <div className="relative flex flex-col items-center before:absolute before:bg-background before:top-0 before:left-0 before:z-[-1] before:min-h-[calc(90px + (48px * 2))] before:w-full before:bg-background">
+      <div className="w-full max-w-[1120px] px-6">
         <Header />
-        <MainContainer>
-          <MainContent>
+        <main className="mt-[calc(16.2px - 2.98px - (10.24px * 2))] min-h-screen">
+          <div className="flex flex-col gap-6 md:gap-16">
             <Summary />
-            <TableContainer>
-              <TableHead>
+            <section className="flex flex-col gap-4 w-full">
+              <div className="none md:flex md:flex-col">
                 <p>Descrição</p>
                 <p>Preço</p>
                 <p>Categoria</p>
                 <p>Data</p>
-              </TableHead>
+              </div>
               <SearchForm />
-              <TransactionsTable>
+              <table className="w-full border-collapse border-spacing-x-2">
                 <tbody>
+                  <tr>
+                    <td width="100%" align="center">
+                      Carregando transações...
+                    </td>
+                  </tr>
                   {isLoading ? (
                     <tr>
                       <td width="100%" align="center">
@@ -72,11 +67,18 @@ export function Transactions() {
                           <tr key={id}>
                             <td width="50%">{description}</td>
                             <td>
-                              <PriceHighlight $variant={type}>
+                              <span
+                                className={cn(
+                                  'text-base',
+                                  type === 'outcome'
+                                    ? 'text-red-500'
+                                    : 'text-green-500',
+                                )}
+                              >
                                 {type === 'outcome'
                                   ? formatCurrency(-price)
                                   : formatCurrency(price)}
-                              </PriceHighlight>
+                              </span>
                             </td>
                             <td>{category}</td>
                             <td>
@@ -88,14 +90,14 @@ export function Transactions() {
                     )
                   )}
                 </tbody>
-              </TransactionsTable>
-            </TableContainer>
-            <PaginationContainer>
+              </table>
+            </section>
+            <section className="w-full flex justify-end mt-[-50px]">
               <Pagination pageIndex={page} totalCount={transactions.length} />
-            </PaginationContainer>
-          </MainContent>
-        </MainContainer>
-      </Content>
-    </Container>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
   )
 }

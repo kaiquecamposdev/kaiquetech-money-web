@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { TransactionsContext } from '@/contexts/TransactionsContext'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MagnifyingGlass } from '@phosphor-icons/react'
@@ -5,7 +7,6 @@ import { memo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useContextSelector } from 'use-context-selector'
 import * as z from 'zod'
-import { SearchButton, SearchContainer, SearchInput } from './styles'
 
 const searchFormSchema = z.object({
   query: z.string(),
@@ -33,17 +34,25 @@ function SearchFormComponent() {
   }
 
   return (
-    <SearchContainer onSubmit={handleSubmit(handleSearchTransactions)}>
-      <SearchInput
+    <form
+      className="flex gap-6"
+      onSubmit={handleSubmit(handleSearchTransactions)}
+    >
+      <Input
         type="text"
         placeholder="Busque por transações"
         {...register('query')}
       />
-      <SearchButton disabled={isSubmitting}>
-        <MagnifyingGlass size={20} />
+      <Button
+        className="flex items-center justify-center gap-3 p-4 disabled:cursor-not-allowed disabled:opacity-50"
+        disabled={isSubmitting}
+        size="icon"
+        variant="outline"
+      >
+        <MagnifyingGlass size={24} />
         <span>Buscar</span>
-      </SearchButton>
-    </SearchContainer>
+      </Button>
+    </form>
   )
 }
 
