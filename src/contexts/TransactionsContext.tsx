@@ -1,6 +1,7 @@
-import { api } from '@/lib/axios'
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { createContext } from 'use-context-selector'
+
+import { api } from '@/lib/axios'
 
 interface TransactionsContextType {
   children: ReactNode

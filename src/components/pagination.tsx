@@ -1,7 +1,8 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useContextSelector } from 'use-context-selector'
+
 import { Button } from '@/components/ui/button'
 import { TransactionsContext } from '@/contexts/TransactionsContext'
-import { CaretLeft, CaretRight } from '@phosphor-icons/react'
-import { useContextSelector } from 'use-context-selector'
 
 interface PaginationProps {
   pageIndex: number
@@ -36,7 +37,7 @@ export function Pagination({
   return (
     <div className="flex gap-2">
       <Button onClick={() => onDecreasePage()}>
-        <CaretLeft size={16} /> Anterior
+        <ChevronLeft className="h-4 w-4" /> Anterior
       </Button>
       {Array.from({
         length: pages,
@@ -52,7 +53,7 @@ export function Pagination({
         )
       })}
       <Button onClick={() => onIncreasePage()}>
-        Próximo <CaretRight size={16} />
+        Próximo <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
   )

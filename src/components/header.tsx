@@ -1,41 +1,16 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Logo } from '@/icons/Logo'
+import { Logo } from '@/icons/logo'
+
+import { Menu } from './menu'
 
 export function Header() {
   return (
     <>
-      <header className="w-full">
-        <div className="flex items-center justify-between gap-4">
-          <h1 className="font-bold text-3xl items-center flex">
-            <Logo />
-            KaiqueTech
-          </h1>
-          <DropdownMenu>
-            <DropdownMenuTrigger>Nova transação</DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Opções</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Única</DropdownMenuItem>
-              <DropdownMenuItem>Várias</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* <Dialog.Root>
-            <Dialog.Trigger className="flex items-center justify-center px-">
-              Nova Transação
-            </Dialog.Trigger>
-            <Dialog.Portal>
-              <NewTransactionModal />
-            </Dialog.Portal>
-          </Dialog.Root> */}
-        </div>
+      <header className="flex w-full items-center justify-between py-6">
+        <h1 className="flex items-center gap-3 text-2xl font-bold">
+          <Logo className="h-10 w-10 fill-secondary-foreground" />
+          KaiqueTech
+        </h1>
+        <Menu />
       </header>
     </>
   )

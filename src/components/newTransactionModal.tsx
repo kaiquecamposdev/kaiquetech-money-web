@@ -1,17 +1,19 @@
-import { TransactionsContext } from '@/contexts/TransactionsContext'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowCircleDown, ArrowCircleUp, X } from '@phosphor-icons/react'
+import { ArrowDownCircle, ArrowUpCircle, X } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { useContextSelector } from 'use-context-selector'
 import * as z from 'zod'
-import {
-  ButtonClose,
-  Content,
-  OptionsContainer,
-  Overlay,
-  SpanError,
-  TransactionTypeButton,
-} from './styles'
+
+import { TransactionsContext } from '@/contexts/TransactionsContext'
+
+// import {
+//   ButtonClose,
+//   Content,
+//   OptionsContainer,
+//   Overlay,
+//   SpanError,
+//   TransactionTypeButton,
+// } from './styles'
 
 const newTransactionsFormSchema = z.object({
   description: z.string().min(1),
@@ -59,7 +61,7 @@ export function NewTransactionModal() {
           <h1>Nova Transação</h1>
 
           <ButtonClose>
-            <X size={24} />
+            <X className="h-6 w-6" />
           </ButtonClose>
 
           <input
@@ -94,11 +96,11 @@ export function NewTransactionModal() {
                   aria-invalid={errors.type ? 'true' : 'false'}
                 >
                   <TransactionTypeButton $variant="income" value="income">
-                    <ArrowCircleUp size={24} />
+                    <ArrowDownCircle className="h-6 w-6" />
                     <span>Entrada</span>
                   </TransactionTypeButton>
                   <TransactionTypeButton $variant="outcome" value="outcome">
-                    <ArrowCircleDown size={24} />
+                    <ArrowUpCircle className="h-6 w-6" />
                     <span>Saída</span>
                   </TransactionTypeButton>
                 </OptionsContainer>
