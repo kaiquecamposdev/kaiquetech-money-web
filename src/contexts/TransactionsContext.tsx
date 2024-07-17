@@ -7,19 +7,28 @@ interface TransactionsContextType {
   children: ReactNode
 }
 export interface Transaction {
-  id: number
+  id: string
+  client: string
   description: string
-  type: 'income' | 'outcome'
-  price: number
   category: string
-  createdAt: Date
+  subCategory: string
+  price: number
+  discount: number | null
+  tax: number | null
+  paymentMethod: 'Dinheiro' | 'Cartão de Crédito' | 'Cartão de Débito' | 'Pix'
+  date: Date
 }
 
 interface CreateTransactionInput {
+  client: string
   description: string
-  price: number
   category: string
-  type: 'income' | 'outcome'
+  subCategory: string
+  price: number
+  discount: number | null
+  tax: number | null
+  paymentMethod: 'Dinheiro' | 'Cartão de Crédito' | 'Cartão de Débito' | 'Pix'
+  date: Date
 }
 
 interface TransactionsContextProps {
