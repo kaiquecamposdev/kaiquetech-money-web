@@ -1,12 +1,14 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { createContext } from 'use-context-selector'
+import { z } from 'zod'
 
 import { api } from '@/lib/axios'
 
 interface TransactionsContextType {
   children: ReactNode
 }
-export interface Transaction {
+
+export type Transaction = {
   id: string
   client: string
   description: string
@@ -19,29 +21,30 @@ export interface Transaction {
   date: Date
 }
 
-interface CreateTransactionInput {
-  client: string
-  description: string
-  category: string
-  subCategory: string
-  price: number
-  discount: number | null
-  tax: number | null
-  paymentMethod: 'Dinheiro' | 'Cartão de Crédito' | 'Cartão de Débito' | 'Pix'
-  date: Date
-}
+const createTransactionSchema = z.object({
+  client: z.string(),
+  description: z.string(),
+  category: z.string(),
+  subCategory: z.string(),
+  price: z.number(),
+  discount: z.number().nullable(),
+  tax: z.number().nullable(),
+  paymentMethod: z.enum([
+    'Dinheiro',
+    'Cartão de Crédito',
+    'Cartão de Débito',
+    'Pix',
+  ]),
+  date: z.date(),
+})
+
+type CreateTransaction = z.infer<typeof createTransactionSchema>
 
 interface TransactionsContextProps {
   transactions: Transaction[]
-  fetchTransactions: (query?: string) => Promise<Transaction[]>
-  filteredTransactions: Transaction[]
-  createNewTransaction: (data: CreateTransactionInput) => Promise<void>
-  page: number
-  onChangePage: (page: number) => void
   isLoading: boolean
-  onChangeLoading: (value: boolean) => void
-  search: string
-  onChangeSearch: (query: string) => void
+  fetchTransactions: () => Promise<Transaction[]>
+  createNewTransaction: (data: CreateTransaction) => Promise<void>
 }
 
 export const TransactionsContext = createContext({} as TransactionsContextProps)
@@ -49,78 +52,65 @@ export const TransactionsContext = createContext({} as TransactionsContextProps)
 export function TransactionsProvider({ children }: TransactionsContextType) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(0)
 
   const fetchTransactions = useCallback(async () => {
     const response = await api.get('transactions')
-    const transactions = response.data as Transaction[]
+    const data = response.data as Transaction[]
 
-    return transactions
+    return data
   }, [])
 
-  const filteredTransactions = useMemo(() => {
-    const result = transactions.filter((transaction) => {
-      return (
-        transaction.description.toLowerCase().includes(search.toLowerCase()) ||
-        transaction.category.toLowerCase().includes(search.toLowerCase())
-      )
-    })
+  const setTransactionsState = useCallback(async () => {
+    const data = await fetchTransactions()
 
-    return result
-  }, [transactions, search])
+    setTransactions(data)
+  }, [fetchTransactions])
 
   const createNewTransaction = useCallback(
-    async (data: CreateTransactionInput) => {
-      const { description, price, category, type } = data
-
-      const response = await api.post('transactions', {
+    async (transaction: CreateTransaction) => {
+      const {
+        client,
         description,
-        price,
         category,
-        type,
+        subCategory,
+        price,
+        discount,
+        tax,
+        paymentMethod,
+        date,
+      } = createTransactionSchema.parse(transaction)
+
+      const { data } = await api.post('transactions', {
+        client,
+        description,
+        category,
+        subCategory,
+        price,
+        discount,
+        tax,
+        paymentMethod,
+        date,
         createdAt: new Date(),
       })
 
-      setTransactions([response.data, ...transactions])
+      setTransactions([data, ...transactions])
     },
     [transactions],
   )
 
-  function onChangePage(page: number) {
-    setPage(page)
-  }
-
-  function onChangeLoading(value: boolean) {
-    setIsLoading(value)
-  }
-
-  function onChangeSearch(query: string) {
-    setSearch(query)
-  }
-
   useEffect(() => {
     if (transactions.length === 0) {
-      fetchTransactions().then((data) => {
-        setTransactions(data)
-        setIsLoading(false)
-      })
+      setTransactionsState().then(() => setIsLoading(false))
     }
-  }, [fetchTransactions, transactions])
+  }, [setTransactionsState, transactions])
 
   return (
     <TransactionsContext.Provider
       value={{
         transactions,
-        fetchTransactions,
-        filteredTransactions,
-        createNewTransaction,
-        page,
-        onChangePage,
         isLoading,
-        onChangeLoading,
-        search,
-        onChangeSearch,
+        fetchTransactions,
+        createNewTransaction,
       }}
     >
       {children}

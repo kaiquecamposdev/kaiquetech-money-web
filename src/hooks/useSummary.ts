@@ -14,23 +14,24 @@ export function useSummary() {
   const summary = useMemo(() => {
     return transactions.reduce(
       (acc, transaction) => {
-        if (transaction.type === 'income') {
-          acc.lastIncomeDate = transaction.createdAt
-          acc.income += transaction.price
+        if (!String(transaction.price).includes('-')) {
+          acc.lastGrossRevenueDate = transaction.date
+          acc.grossRevenue += transaction.price
           acc.total += transaction.price
         } else {
-          acc.outcome += transaction.price
+          acc.lastExpensesDate = transaction.date
+          acc.expenses += transaction.price
           acc.total -= transaction.price
         }
 
         return acc
       },
       {
-        income: 0,
-        outcome: 0,
+        grossRevenue: 0,
+        expenses: 0,
         total: 0,
-        lastIncomeDate: new Date('0000-00-00T00:00:00.000Z'),
-        lastOutcomeDate: new Date('0000-00-00T00:00:00.000Z'),
+        lastGrossRevenueDate: new Date('0000-00-00T00:00:00.000Z'),
+        lastExpensesDate: new Date('0000-00-00T00:00:00.000Z'),
       },
     )
   }, [transactions])
