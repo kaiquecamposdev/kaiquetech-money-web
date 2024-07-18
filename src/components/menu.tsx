@@ -1,12 +1,5 @@
-import {
-  ArrowLeftRight,
-  MenuIcon,
-  Moon,
-  PaintBucketIcon,
-  Settings,
-  Sheet,
-  Sun,
-} from 'lucide-react'
+import { ArrowLeftRight, MenuIcon, PaintBucketIcon, Sheet } from 'lucide-react'
+import { useState } from 'react'
 
 import {
   DropdownMenu,
@@ -14,6 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
@@ -23,6 +18,8 @@ import {
 import { useTheme } from '@/contexts/ThemeProvider'
 
 export function Menu() {
+  const [position, setPosition] = useState('system')
+
   const { setTheme } = useTheme()
 
   return (
@@ -51,27 +48,29 @@ export function Menu() {
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
-              <DropdownMenuItem
-                className="gap-2"
-                onClick={() => setTheme('light')}
+              <DropdownMenuRadioGroup
+                value={position}
+                onValueChange={setPosition}
               >
-                <Sun className="h-4 w-4" />
-                <span>Claro</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="gap-2"
-                onClick={() => setTheme('dark')}
-              >
-                <Moon className="h-4 w-4" />
-                <span>Escuro</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="gap-2"
-                onClick={() => setTheme('system')}
-              >
-                <Settings className="h-4 w-4" />
-                <span>Sistema</span>
-              </DropdownMenuItem>
+                <DropdownMenuRadioItem
+                  value="light"
+                  onClick={() => setTheme('light')}
+                >
+                  Claro
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem
+                  value="dark"
+                  onClick={() => setTheme('dark')}
+                >
+                  Escuro
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem
+                  value="system"
+                  onClick={() => setTheme('system')}
+                >
+                  Sistema
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
