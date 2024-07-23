@@ -10,25 +10,25 @@ interface TransactionsContextType {
 
 export type Transaction = {
   id: string
-  client: string
+  client?: string
   description: string
-  category: string
-  subCategory: string
+  category?: string
+  subCategory?: string
   price: number
-  discount: number | null
-  tax: number | null
+  discount?: number
+  tax?: number
   paymentMethod: 'Dinheiro' | 'Cartão de Crédito' | 'Cartão de Débito' | 'Pix'
   date: Date
 }
 
 const createTransactionSchema = z.object({
-  client: z.string(),
+  client: z.string().optional(),
   description: z.string(),
-  category: z.string(),
-  subCategory: z.string(),
+  category: z.string().optional(),
+  subCategory: z.string().optional(),
   price: z.number(),
-  discount: z.number().nullable(),
-  tax: z.number().nullable(),
+  discount: z.number().optional(),
+  tax: z.number().optional(),
   paymentMethod: z.enum([
     'Dinheiro',
     'Cartão de Crédito',

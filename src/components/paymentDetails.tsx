@@ -1,10 +1,10 @@
-import { useForm } from '@tanstack/react-form'
-import { zodValidator } from '@tanstack/zod-form-adapter'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { z, ZodError } from 'zod'
+import { useForm } from 'react-hook-form'
 
 import { Transaction } from '@/contexts/TransactionsContext'
 import { dayjs } from '@/lib/dayjs'
+import { z } from '@/lib/zod'
 import { formatCurrency } from '@/utils/format-currency'
 
 import { Button } from './ui/button'
@@ -20,6 +20,7 @@ import {
   Form,
   FormControl,
   FormDescription,
+  FormField,
   FormItem,
   FormLabel,
   FormMessage,
@@ -40,48 +41,50 @@ type TransactionDetailsProps = {
   transaction: Transaction
 }
 
+const transactionSchema = z.object({
+  client: z.string().optional(),
+  description: z.string().min(1).max(255),
+  category: z.string().optional(),
+  subCategory: z.string().optional(),
+  price: z.coerce.number().min(1).default(0),
+  discount: z.coerce.number().optional().default(0),
+  tax: z.coerce.number().optional().default(0),
+  // paymentMethod: z.enum([
+  //   'Dinheiro',
+  //   'Cartão de Crédito',
+  //   'Cartão de Débito',
+  //   'Pix',
+  // ]),
+  // date: z.date().default(new Date()),
+})
+
+type UpdateTransactionForm = z.infer<typeof transactionSchema>
+
 export function PaymentDetails({ transaction }: TransactionDetailsProps) {
+  const form = useForm({
+    resolver: zodResolver(transactionSchema),
+    defaultValues: {
+      id: transaction.id,
+      client: transaction.client || '',
+      description: transaction.description,
+      category: transaction.category || '',
+      subCategory: transaction.subCategory || '',
+      price: transaction.price,
+      discount: transaction.discount || 0,
+      tax: transaction.tax || 0,
+      // paymentMethod: transaction.paymentMethod,
+      // date: transaction.date,
+    },
+  })
   const [isEdit, setIsEdit] = useState(false)
 
   function onSetIsEdit() {
     setIsEdit(!isEdit)
   }
 
-  const form = useForm({
-    validatorAdapter: zodValidator(),
-    validators: {
-      onSubmit: z.object({
-        id: z.number(),
-        client: z.string(),
-        description: z.string(),
-        category: z.string(),
-        subCategory: z.string(),
-        price: z.number(),
-        discount: z.number().optional(),
-        tax: z.number().optional(),
-        date: z.string(),
-      }),
-    },
-    defaultValues: {
-      id: transaction.id,
-      client: transaction.client,
-      description: transaction.description,
-      category: transaction.category,
-      subCategory: transaction.subCategory,
-      price: transaction.price,
-      discount: transaction.discount,
-      tax: transaction.tax,
-      date: transaction.date,
-    },
-    onSubmit: async ({ value }) => {
-      if (value) {
-        console.log(value)
-        onSetIsEdit()
-      }
-
-      throw new ZodError([])
-    },
-  })
+  function onSubmit(data: UpdateTransactionForm) {
+    console.log(data)
+  }
 
   return (
     <>
@@ -102,208 +105,205 @@ export function PaymentDetails({ transaction }: TransactionDetailsProps) {
 
         <ScrollArea>
           {isEdit ? (
-            <Form
-              children={
-                <>
-                  <form.Field name={'id'}>
-                    {(field) => (
+            <>
+              <Form {...form}>
+                <form
+                  key={transaction.id}
+                  id="transaction-form"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="flex flex-col gap-3 px-2"
+                >
+                  <FormField
+                    control={form.control}
+                    name={'id'}
+                    render={({ field }) => (
                       <>
                         <FormItem>
                           <FormLabel>ID</FormLabel>
                           <FormControl>
-                            <Input
-                              type="text"
-                              id={field.name}
-                              name={field.name}
-                              value={field.state.value || 0}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                            />
+                            <Input {...field} disabled />
                           </FormControl>
                           <FormDescription>
                             O ID é um valor único que identifica a transação.
                           </FormDescription>
-                          <FormMessage />
                         </FormItem>
                       </>
                     )}
-                  </form.Field>
-                  <form.Field name={'client'}>
-                    {(field) => (
+                  />
+                  <FormField
+                    control={form.control}
+                    name={'client'}
+                    render={({ field }) => (
                       <>
                         <FormItem>
                           <FormLabel>Cliente</FormLabel>
                           <FormControl>
-                            <Input
-                              type="text"
-                              id={field.name}
-                              name={field.name}
-                              value={field.state.value || 0}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                            />
+                            <Input {...field} />
                           </FormControl>
                           <FormDescription>
                             O cliente é a pessoa que está realizando a
                             transação.
                           </FormDescription>
-                          <FormMessage />
                         </FormItem>
                       </>
                     )}
-                  </form.Field>
-                  <form.Field name={'description'}>
-                    {(field) => (
+                  />
+                  <FormField
+                    control={form.control}
+                    name={'description'}
+                    render={({ field }) => (
                       <>
                         <FormItem>
                           <FormLabel>Descrição</FormLabel>
                           <FormControl>
                             <Input
-                              type="text"
-                              id={field.name}
-                              name={field.name}
-                              value={field.state.value || 0}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
+                              {...field}
+                              {...form.register('description', {
+                                required: 'A descrição é um campo obrigatório.',
+                              })}
                             />
                           </FormControl>
-                          <FormDescription>
-                            A descrição é um texto que descreve a transação.
-                          </FormDescription>
-                          <FormMessage />
+                          {form.formState.errors.description ? (
+                            <FormMessage>
+                              {form.formState.errors.description?.message}
+                            </FormMessage>
+                          ) : (
+                            <FormDescription>
+                              A descrição é um texto que descreve a transação.
+                            </FormDescription>
+                          )}
                         </FormItem>
                       </>
                     )}
-                  </form.Field>
-                  <form.Field name={'category'}>
-                    {(field) => (
+                  />
+                  <FormField
+                    control={form.control}
+                    name={'category'}
+                    render={({ field }) => (
                       <>
                         <FormItem>
                           <FormLabel>Categoria</FormLabel>
                           <FormControl>
-                            <Input
-                              type="text"
-                              id={field.name}
-                              name={field.name}
-                              value={field.state.value || 0}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                            />
+                            <Input {...field} />
                           </FormControl>
                           <FormDescription>
                             A categoria é um agrupamento de transações.
                           </FormDescription>
-                          <FormMessage />
                         </FormItem>
                       </>
                     )}
-                  </form.Field>
-                  <form.Field name={'subCategory'}>
-                    {(field) => (
+                  />
+                  <FormField
+                    control={form.control}
+                    name={'subCategory'}
+                    render={({ field }) => (
                       <>
                         <FormItem>
                           <FormLabel>Sub-categoria</FormLabel>
                           <FormControl>
-                            <Input
-                              type="text"
-                              id={field.name}
-                              name={field.name}
-                              value={field.state.value || 0}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                            />
+                            <Input {...field} />
                           </FormControl>
                           <FormDescription>
                             A sub-categoria é um agrupamento de transações
                             dentro de uma categoria.
                           </FormDescription>
-                          <FormMessage />
                         </FormItem>
                       </>
                     )}
-                  </form.Field>
-                  <form.Field name={'price'}>
-                    {(field) => (
-                      <>
-                        <FormItem>
-                          <FormLabel>Preço</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              id={field.name}
-                              name={field.name}
-                              value={field.state.value || 0}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                            />
-                          </FormControl>
+                  />
+                  <FormField
+                    control={form.control}
+                    name={'price'}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preço</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            {...form.register('price', {
+                              required: 'O preço é um campo obrigatório.',
+                            })}
+                          />
+                        </FormControl>
+                        {form.formState.errors.price ? (
+                          <FormMessage>
+                            {form.formState.errors.price.message}
+                          </FormMessage>
+                        ) : (
                           <FormDescription>
                             O preço é o valor da transação.
                           </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      </>
+                        )}
+                      </FormItem>
                     )}
-                  </form.Field>
-                  <form.Field name={'discount'}>
-                    {(field) => (
-                      <>
-                        <FormItem>
-                          <FormLabel>Desconto</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              id={field.name}
-                              name={field.name}
-                              value={field.state.value || 0}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            O desconto é um valor que será subtraído do total da
-                            transação.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      </>
+                  />
+                  <FormField
+                    control={form.control}
+                    name={'discount'}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Desconto</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          O desconto é um valor que será subtraído do total da
+                          transação.
+                        </FormDescription>
+                      </FormItem>
                     )}
-                  </form.Field>
-                  <form.Field name={'tax'}>
-                    {(field) => (
-                      <>
-                        <FormItem>
-                          <FormLabel>Taxa</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              id={field.name}
-                              name={field.name}
-                              value={field.state.value || 0}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            A taxa é um valor que será adicionado ao total da
-                            transação.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      </>
+                  />
+                  <FormField
+                    control={form.control}
+                    name={'tax'}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Taxa</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          A taxa é um valor que será subtraído do total da
+                          transação.
+                        </FormDescription>
+                      </FormItem>
                     )}
-                  </form.Field>
-                </>
-              }
-            ></Form>
+                  />
+                  {/* <FormField
+                    control={form.control}
+                    name={'paymentMethod'}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Método de Pagamento</FormLabel>
+                        <FormControl>{<Select {...field} />}</FormControl>
+                        <FormMessage>
+                          {form.formState.errors.tax?.message}
+                        </FormMessage>
+                        <FormDescription>
+                          A taxa é um valor que será subtraído do total da
+                          transação .
+                        </FormDescription>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={'date'}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Data</FormLabel>
+                        <FormControl>{<Input {...field} />}</FormControl>
+                        <FormMessage />
+                        <FormDescription>
+                          A taxa é um valor que será subtraído do total da
+                          transação .
+                        </FormDescription>
+                      </FormItem>
+                    )}
+                  /> */}
+                </form>
+              </Form>
+            </>
           ) : (
             <>
               <Table>
@@ -379,6 +379,7 @@ export function PaymentDetails({ transaction }: TransactionDetailsProps) {
               </Table>
             </>
           )}
+
           <ScrollBar orientation="vertical" />
         </ScrollArea>
 
@@ -388,7 +389,7 @@ export function PaymentDetails({ transaction }: TransactionDetailsProps) {
               <Button variant="ghost" onClick={onSetIsEdit}>
                 Voltar
               </Button>
-              <Button type="submit" onClick={form.handleSubmit}>
+              <Button form="transaction-form" type="submit">
                 Salvar
               </Button>
             </>
