@@ -143,7 +143,7 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       const date = row.getValue('Data') as Date
 
-      const formatted = dayjs(date).format('DD/MM/YYYY HH:mm:ss')
+      const formatted = dayjs(date).format('LL')
 
       return <div className="text-right font-medium">{formatted}</div>
     },

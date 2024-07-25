@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { CalendarIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -38,10 +39,22 @@ import {
   TransactionsContext,
 } from '@/contexts/TransactionsContext'
 import { dayjs } from '@/lib/dayjs'
+import { cn } from '@/lib/utils'
 import { z } from '@/lib/zod'
 import { formatCurrency } from '@/utils/format-currency'
 
-import { RemoveTransactionModal } from './remove-transaction-modal'
+import { Calendar } from '../ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select'
+import { ButtonRemoveTransactionModal } from './button-remove-transaction-modal'
 
 type TransactionDetailsProps = {
   transaction: Transaction
@@ -55,13 +68,13 @@ const updateTransactionSchema = z.object({
   price: z.coerce.number().default(0),
   discount: z.coerce.number().optional().default(0),
   tax: z.coerce.number().optional().default(0),
-  // paymentMethod: z.enum([
-  //   'Dinheiro',
-  //   'Cartão de Crédito',
-  //   'Cartão de Débito',
-  //   'Pix',
-  // ]),
-  // date: z.date().default(new Date()),
+  paymentMethod: z.enum([
+    'Dinheiro',
+    'Cartão de Crédito',
+    'Cartão de Débito',
+    'Pix',
+  ]),
+  date: z.date().default(new Date()),
 })
 
 type UpdateTransactionForm = z.infer<typeof updateTransactionSchema>
@@ -79,8 +92,8 @@ export function ActionPaymentDetails({ transaction }: TransactionDetailsProps) {
       price: transaction.price,
       discount: transaction.discount || 0,
       tax: transaction.tax || 0,
-      // paymentMethod: transaction.paymentMethod,
-      // date: transaction.date,
+      paymentMethod: transaction.paymentMethod,
+      date: new Date(transaction.date),
     },
   })
 
@@ -94,6 +107,7 @@ export function ActionPaymentDetails({ transaction }: TransactionDetailsProps) {
   )
 
   function onSetIsEdit() {
+    event?.preventDefault()
     setIsEdit(!isEdit)
   }
 
@@ -111,6 +125,8 @@ export function ActionPaymentDetails({ transaction }: TransactionDetailsProps) {
       })
   }
 
+  const methods = updateTransactionSchema.shape.paymentMethod.options
+
   return (
     <>
       <DialogTrigger asChild>
@@ -124,8 +140,8 @@ export function ActionPaymentDetails({ transaction }: TransactionDetailsProps) {
 
       <DialogContent
         className="h-full max-h-[600px]"
-        onEscapeKeyDown={() => setIsEdit(false)}
-        onInteractOutside={() => setIsEdit(false)}
+        onEscapeKeyDown={onSetIsEdit}
+        onInteractOutside={onSetIsEdit}
       >
         <DialogHeader>
           <DialogTitle>Transação: #{transaction.id}</DialogTitle>
@@ -133,7 +149,7 @@ export function ActionPaymentDetails({ transaction }: TransactionDetailsProps) {
         </DialogHeader>
 
         <ScrollArea>
-          <div>
+          <div className="space-x-2">
             {isEdit ? (
               <>
                 <Form {...form}>
@@ -344,38 +360,103 @@ export function ActionPaymentDetails({ transaction }: TransactionDetailsProps) {
                         </FormItem>
                       )}
                     />
-                    {/* <FormField
-                    control={form.control}
-                    name={'paymentMethod'}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Método de Pagamento</FormLabel>
-                        <FormControl>{<Select {...field} />}</FormControl>
-                        <FormMessage>
-                          {form.formState.errors.tax?.message}
-                        </FormMessage>
-                        <FormDescription>
-                          A taxa é um valor que será subtraído do total da
-                          transação .
-                        </FormDescription>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={'date'}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Data</FormLabel>
-                        <FormControl>{<Input {...field} />}</FormControl>
-                        <FormMessage />
-                        <FormDescription>
-                          A taxa é um valor que será subtraído do total da
-                          transação .
-                        </FormDescription>
-                      </FormItem>
-                    )}
-                  /> */}
+                    <FormField
+                      control={form.control}
+                      name={'paymentMethod'}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Método de Pagamento</FormLabel>
+                          <FormControl>
+                            <Select
+                              {...field}
+                              value={transaction.paymentMethod}
+                            >
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Selecione o método de pagamento" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>
+                                    Métodos de pagamento
+                                  </SelectLabel>
+                                  {methods.map((method) => {
+                                    return (
+                                      <SelectItem key={method} value={method}>
+                                        {method}
+                                      </SelectItem>
+                                    )
+                                  })}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          {form.formState.errors.paymentMethod ? (
+                            <FormMessage>
+                              {form.formState.errors.paymentMethod?.message}
+                            </FormMessage>
+                          ) : (
+                            <FormDescription>
+                              A taxa é um valor que será subtraído do total da
+                              transação.
+                            </FormDescription>
+                          )}
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={'date'}
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Data</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={'outline'}
+                                  className={cn(
+                                    'w-[240px] pl-3 text-left font-normal',
+                                    !field.value && 'text-muted-foreground',
+                                  )}
+                                >
+                                  {field.value ? (
+                                    dayjs(field.value).format('LL')
+                                  ) : (
+                                    <span>Escolha a data</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={() =>
+                                  field.value > new Date() ||
+                                  field.value < new Date('1900-01-01')
+                                }
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          {form.formState.errors.date ? (
+                            <FormMessage>
+                              {form.formState.errors.date.message}
+                            </FormMessage>
+                          ) : (
+                            <FormDescription>
+                              A data do momento em que a transação foi
+                              realizada.
+                            </FormDescription>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </form>
                 </Form>
               </>
@@ -410,7 +491,7 @@ export function ActionPaymentDetails({ transaction }: TransactionDetailsProps) {
                     <TableRow>
                       <TableCell>Data:</TableCell>
                       <TableCell>
-                        {dayjs(transaction.date).format('DD/MM/YYYY HH:mm:ss')}
+                        {dayjs(transaction.date).format('LL')}
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -461,11 +542,7 @@ export function ActionPaymentDetails({ transaction }: TransactionDetailsProps) {
         <DialogFooter>
           {isEdit ? (
             <>
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => setIsEdit(!isEdit)}
-              >
+              <Button variant="ghost" onClick={onSetIsEdit}>
                 Voltar
               </Button>
               <Button form="transaction-form" type="submit">
@@ -474,13 +551,11 @@ export function ActionPaymentDetails({ transaction }: TransactionDetailsProps) {
             </>
           ) : (
             <>
-              <RemoveTransactionModal
+              <ButtonRemoveTransactionModal
                 onRemoveTransaction={onRemoveTransaction}
                 transaction={transaction}
               />
-              <Button type="button" onClick={onSetIsEdit}>
-                Editar
-              </Button>
+              <Button onClick={onSetIsEdit}>Editar</Button>
             </>
           )}
         </DialogFooter>

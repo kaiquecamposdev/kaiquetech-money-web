@@ -11,15 +11,15 @@ import {
 } from '@/components/ui/dialog'
 import { Transaction } from '@/contexts/TransactionsContext'
 
-type RemoveTransactionModalProps = {
+type ButtonRemoveTransactionModalProps = {
   onRemoveTransaction: (id: string) => void
   transaction: Transaction
 }
 
-export function RemoveTransactionModal({
+export function ButtonRemoveTransactionModal({
   transaction,
   onRemoveTransaction,
-}: RemoveTransactionModalProps) {
+}: ButtonRemoveTransactionModalProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
