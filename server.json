@@ -1,42 +1,6 @@
 {
   "transactions": [
     {
-      "id": "m5gr84i9",
-      "client": "Lucas",
-      "description": "Descrição da compra 1",
-      "category": "Categoria 1",
-      "subCategory": "Subcategoria 1",
-      "price": 316,
-      "discount": 10,
-      "tax": 5,
-      "paymentMethod": "Dinheiro",
-      "date": "2023-04-01T12:00:32"
-    },
-    {
-      "id": "3u1reuv4",
-      "client": "Antônio",
-      "description": "Descrição da compra 2",
-      "category": "Categoria 2",
-      "subCategory": "Subcategoria 2",
-      "price": 450,
-      "discount": null,
-      "tax": 8,
-      "paymentMethod": "Cartão de Crédito",
-      "date": "2023-04-02T12:30:00"
-    },
-    {
-      "id": "4j2k1l4j",
-      "client": "Marcos",
-      "description": "Descrição da compra 3",
-      "category": "Categoria 3",
-      "subCategory": "Subcategoria 3",
-      "price": 120,
-      "discount": 5,
-      "tax": 9,
-      "paymentMethod": "Cartão de Débito",
-      "date": "2023-04-03T12:55:43"
-    },
-    {
       "id": "5mn6b7v8",
       "client": "Alberto",
       "description": "Descrição da compra 4",
@@ -121,42 +85,6 @@
       "date": "2023-10-24T12:34:56.789Z"
     },
     {
-      "id": "98765432-1098-7654-3210-fedcba9876",
-      "client": "Ashley Rodriguez",
-      "description": "Sleek Wooden Shoes",
-      "category": "Sports",
-      "subCategory": "Sleek",
-      "price": 54.32,
-      "discount": null,
-      "tax": 5.43,
-      "paymentMethod": "Pix",
-      "date": "2023-10-26T14:56:32.109Z"
-    },
-    {
-      "id": "fedcba98-7654-3210-9876-543210fedcb",
-      "client": "Christopher Taylor",
-      "description": "Handmade Steel Chair",
-      "category": "Health",
-      "subCategory": "Handmade",
-      "price": 76.54,
-      "discount": 7.65,
-      "tax": null,
-      "paymentMethod": "Dinheiro",
-      "date": "2023-10-25T17:45:23.456Z"
-    },
-    {
-      "id": "abcdef12-3456-7890-1234-567890abcdef",
-      "client": "Amanda Anderson",
-      "description": "Unbranded Granite Gloves",
-      "category": "Toys",
-      "subCategory": "Unbranded",
-      "price": 23.45,
-      "discount": null,
-      "tax": 2.35,
-      "paymentMethod": "Cartão de Débito",
-      "date": "2023-10-24T09:12:34.567Z"
-    },
-    {
       "id": "10987654-3210-fedc-ba98-76543210fedc",
       "client": "Daniel Thomas",
       "description": "Practical Cotton Shoes",
@@ -187,7 +115,7 @@
       "category": "Beauty",
       "subCategory": "Refined",
       "price": 89.01,
-      "discount": 8.90,
+      "discount": 8.9,
       "tax": null,
       "paymentMethod": "Dinheiro",
       "date": "2023-10-24T15:34:56.789Z"
@@ -234,7 +162,7 @@
       "description": "Practical Plastic Gloves",
       "category": "Games",
       "subCategory": "Practical",
-      "price": 78.90,
+      "price": 78.9,
       "discount": 7.89,
       "tax": null,
       "paymentMethod": "Dinheiro",
@@ -295,7 +223,7 @@
       "category": "Garden",
       "subCategory": "Unbranded",
       "price": -89.01,
-      "discount": 8.90,
+      "discount": 8.9,
       "tax": null,
       "paymentMethod": "Cartão de Débito",
       "date": "2023-10-24T14:34:56.789Z"
@@ -342,7 +270,7 @@
       "description": "Sleek Granite Chair",
       "category": "Home",
       "subCategory": "Sleek",
-      "price": -78.90,
+      "price": -78.9,
       "discount": 7.89,
       "tax": null,
       "paymentMethod": "Cartão de Débito",

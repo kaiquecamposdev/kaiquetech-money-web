@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Transaction } from '@/contexts/TransactionsContext'
 import { formatCurrency } from '@/utils/format-currency'
 
-import { ActionsRow } from './actionsRow'
+import { ActionsRow } from './actions-row'
 
 export const columns: ColumnDef<Transaction>[] = [
   {

@@ -1,11 +1,8 @@
 import { Row } from '@tanstack/react-table'
 import { MoreHorizontal } from 'lucide-react'
 
-import { Transaction } from '@/contexts/TransactionsContext'
-
-import { PaymentDetails } from './paymentDetails'
-import { Button } from './ui/button'
-import { Dialog } from './ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Dialog } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +10,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu'
+import { Transaction } from '@/contexts/TransactionsContext'
+
+import { ActionPaymentDetails } from './action-payment-details'
 
 type ActionsRowProps = {
   row: Row<Transaction>
@@ -43,7 +43,7 @@ export function ActionsRow({ row }: ActionsRowProps) {
           <DropdownMenuItem disabled={true}>
             Visualizar cliente
           </DropdownMenuItem>
-          <PaymentDetails transaction={transaction} />
+          <ActionPaymentDetails transaction={transaction} />
         </DropdownMenuContent>
       </DropdownMenu>
     </Dialog>

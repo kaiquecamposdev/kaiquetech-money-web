@@ -1,15 +1,20 @@
-import { ScrollArea, ScrollBar } from './components/ui/scroll-area'
+import { Toaster } from 'sonner'
+
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+
 import { ThemeProvider } from './contexts/ThemeProvider'
 import { TransactionsProvider } from './contexts/TransactionsContext'
-import { Transactions } from './pages/transactions'
+import { Home } from './pages/home'
 
 export function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <TransactionsProvider>
         <ScrollArea>
-          <Transactions />
+          <Home />
+          <Toaster richColors />
           <ScrollBar orientation="vertical" />
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </TransactionsProvider>
     </ThemeProvider>

@@ -45,6 +45,7 @@ interface TransactionsContextProps {
   isLoading: boolean
   fetchTransactions: () => Promise<Transaction[]>
   createNewTransaction: (data: CreateTransaction) => Promise<void>
+  removeTransaction: (id: string) => Promise<void>
 }
 
 export const TransactionsContext = createContext({} as TransactionsContextProps)
@@ -61,9 +62,13 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
   }, [])
 
   const setTransactionsState = useCallback(async () => {
-    const data = await fetchTransactions()
-
-    setTransactions(data)
+    fetchTransactions()
+      .then((data) => {
+        setTransactions(data)
+      })
+      .catch(() => {
+        setTransactions([])
+      })
   }, [fetchTransactions])
 
   const createNewTransaction = useCallback(
@@ -97,10 +102,31 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
     },
     [transactions],
   )
+  const removeTransaction = useCallback(
+    async (id: string) => {
+      const transaction = await api.get('transactions', {
+        params: {
+          id,
+        },
+      })
+
+      if (!transaction) {
+        throw new Error('Transaction not found')
+      }
+
+      setTransactions(
+        transactions.filter((transaction) => transaction.id !== id),
+      )
+      await api.delete(`transactions/${id}`)
+    },
+    [transactions],
+  )
 
   useEffect(() => {
     if (transactions.length === 0) {
-      setTransactionsState().then(() => setIsLoading(false))
+      setTransactionsState().then(() => {
+        setIsLoading(false)
+      })
     }
   }, [setTransactionsState, transactions])
 
@@ -111,6 +137,7 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
         isLoading,
         fetchTransactions,
         createNewTransaction,
+        removeTransaction,
       }}
     >
       {children}

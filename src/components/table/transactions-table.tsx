@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/table'
 import { TransactionsContext } from '@/contexts/TransactionsContext'
 
-import { columns } from './transactionsColumns'
+import { columns } from './table-columns'
 
 export function TransactionsTable() {
   const [sorting, setSorting] = useState<SortingState>([])
@@ -66,7 +66,7 @@ export function TransactionsTable() {
   })
 
   return (
-    <section className="w-full">
+    <div className="w-full">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filtrar descrições..."
@@ -177,6 +177,6 @@ export function TransactionsTable() {
           </Button>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
