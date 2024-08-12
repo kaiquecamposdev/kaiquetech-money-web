@@ -12,7 +12,9 @@ export function Summary() {
     <section className="relative flex w-full gap-4 overflow-x-hidden">
       <Card className="flex w-full max-w-[400px] flex-col gap-2 rounded-md bg-card p-6">
         <CardHeader className="flex flex-row justify-between p-0">
-          <p className="text-base text-muted-foreground">Faturamento Bruto</p>
+          <p className="font-noto text-base text-muted-foreground">
+            Faturamento Bruto
+          </p>
           <ArrowUpCircle className="h-8 w-8 fill-green-500 dark:fill-green-700" />
         </CardHeader>
         <CardContent className="p-0">
@@ -21,16 +23,16 @@ export function Summary() {
           </h2>
         </CardContent>
         <CardFooter className="flex flex-row justify-between p-0">
-          <p className="text-xs text-muted-foreground">
+          <p className="font-noto text-xs text-muted-foreground">
             Último faturamento em{' '}
-            {dayjs(summary.lastGrossRevenueDate).format('ll')}
+            {dayjs(summary.lastGrossRevenueDate).format('lll')}
           </p>
         </CardFooter>
       </Card>
 
       <Card className="flex w-full max-w-[400px] flex-col gap-2 rounded-md bg-card p-6">
         <CardHeader className="flex flex-row justify-between p-0">
-          <p className="text-base text-muted-foreground">Despesas</p>
+          <p className="font-noto text-base text-muted-foreground">Despesas</p>
           <ArrowDownCircle className="h-8 w-8 fill-red-500 dark:fill-red-700" />
         </CardHeader>
         <CardContent className="p-0">
@@ -39,15 +41,15 @@ export function Summary() {
           </h2>
         </CardContent>
         <CardFooter className="flex flex-row justify-between p-0">
-          <p className="text-xs text-muted-foreground">
-            Última despesa em {dayjs(summary.lastExpensesDate).format('ll')}
+          <p className="font-noto text-xs text-muted-foreground">
+            Última despesa em {dayjs(summary.lastExpensesDate).format('lll')}
           </p>
         </CardFooter>
       </Card>
 
       <Card className="flex w-full max-w-[400px] flex-col gap-2 rounded-md bg-primary p-6">
         <CardHeader className="flex flex-row justify-between p-0">
-          <p className="text-base text-primary-foreground dark:text-secondary-foreground">
+          <p className="font-noto text-base text-primary-foreground dark:text-secondary-foreground">
             Total
           </p>
           <DollarSign className="h-8 w-8 text-primary-foreground dark:text-secondary-foreground" />
@@ -58,8 +60,8 @@ export function Summary() {
           </h2>
         </CardContent>
         <CardFooter className="flex flex-row justify-between p-0">
-          <p className="text-xs text-primary-foreground dark:text-secondary-foreground">
-            Saldo em {dayjs(summary.lastExpensesDate).format('ll')}
+          <p className="font-noto text-xs text-primary-foreground dark:text-secondary-foreground">
+            Saldo em {dayjs(summary.lastExpensesDate).format('lll')}
           </p>
         </CardFooter>
       </Card>

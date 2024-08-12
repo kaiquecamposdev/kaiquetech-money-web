@@ -9,6 +9,10 @@ module.exports = {
   ],
   prefix: '',
   theme: {
+    fontFamily: {
+      sans: ['Poppins', 'sans-serif'],
+      noto: ['Noto Sans', 'sans-serif'],
+    },
     container: {
       center: true,
       padding: '2rem',

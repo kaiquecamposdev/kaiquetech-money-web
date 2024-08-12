@@ -21,7 +21,7 @@ export function useSummary() {
         } else {
           acc.lastExpensesDate = transaction.date
           acc.expenses += transaction.price
-          acc.total -= transaction.price
+          acc.total += transaction.price
         }
 
         return acc
@@ -30,8 +30,8 @@ export function useSummary() {
         grossRevenue: 0,
         expenses: 0,
         total: 0,
-        lastGrossRevenueDate: new Date('0000-00-00T00:00:00.000Z'),
-        lastExpensesDate: new Date('0000-00-00T00:00:00.000Z'),
+        lastGrossRevenueDate: new Date(),
+        lastExpensesDate: new Date(),
       },
     )
   }, [transactions])

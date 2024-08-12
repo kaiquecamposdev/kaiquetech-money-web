@@ -1,31 +1,19 @@
 {
   "transactions": [
     {
-      "id": "5mn6b7v8",
-      "client": "Alberto",
-      "description": "Descrição da compra 4",
-      "category": "Categoria 4",
-      "subCategory": "Subcategoria 4",
-      "price": -789,
-      "discount": 15,
-      "tax": null,
-      "paymentMethod": "Pix",
-      "date": "2023-04-04T13:10:12"
-    },
-    {
-      "id": "6n7m8o9p",
       "client": "Carlos",
       "description": "Descrição da compra 5",
       "category": "Categoria 5",
       "subCategory": "Subcategoria 5",
       "price": -560.42,
-      "discount": 20.23,
+      "discount": 20,
       "tax": 6,
       "paymentMethod": "Cartão de Crédito",
-      "date": "2023-04-05T13:30:00"
+      "date": "2023-04-05T16:30:00.000Z",
+      "updatedAt": "2024-08-08T16:01:10.537Z",
+      "id": "6n7m8o9p"
     },
     {
-      "id": "7982979c-889a-488a-987d-82729721098f",
       "client": "Brenda Garcia",
       "description": "Ergonomic Cotton Gloves",
       "category": "Automotive",
@@ -34,7 +22,9 @@
       "discount": 12.34,
       "tax": 6.78,
       "paymentMethod": "Cartão de Crédito",
-      "date": "2023-10-25T16:37:42.778Z"
+      "date": "2023-10-25T16:37:42.778Z",
+      "updatedAt": "2024-07-29T22:29:03.918Z",
+      "id": "7982979c-889a-488a-987d-82729721098f"
     },
     {
       "id": "087b329a-924c-478b-896a-987654321098",
@@ -145,16 +135,16 @@
       "date": "2023-10-25T19:45:23.456Z"
     },
     {
-      "id": "12345678-90ab-cdef-1234-567890abcd",
-      "client": "Jennifer Garcia",
+      "client": "Jennifer",
       "description": "Unbranded Granite Shoes",
       "category": "Music",
       "subCategory": "Unbranded",
       "price": 56.78,
-      "discount": null,
+      "discount": 0,
       "tax": 5.68,
       "paymentMethod": "Pix",
-      "date": "2023-10-24T11:34:56.789Z"
+      "date": "2023-10-24T11:34:56.789Z",
+      "id": "12345678-90ab-cdef-1234-567890abcd"
     },
     {
       "id": "98765432-1098-7654-3210-fedcba987",

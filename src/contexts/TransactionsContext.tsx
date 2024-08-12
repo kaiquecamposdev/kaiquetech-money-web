@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { createContext } from 'use-context-selector'
 import { z } from 'zod'
 
-import { api } from '@/lib/axios'
+import { api } from '@/api'
 
 interface TransactionsContextType {
   children: ReactNode
@@ -27,8 +27,8 @@ const createTransactionSchema = z.object({
   category: z.string().optional(),
   subCategory: z.string().optional(),
   price: z.number(),
-  discount: z.number().optional(),
-  tax: z.number().optional(),
+  discount: z.coerce.number().optional(),
+  tax: z.coerce.number().optional(),
   paymentMethod: z.enum([
     'Dinheiro',
     'Cartão de Crédito',
@@ -38,13 +38,49 @@ const createTransactionSchema = z.object({
   date: z.date(),
 })
 
-type CreateTransaction = z.infer<typeof createTransactionSchema>
+export type CreateTransaction = z.infer<typeof createTransactionSchema>
+
+const updateTransactionSchema = z.object({
+  id: z.string(),
+  client: z.string().optional(),
+  description: z.string(),
+  category: z.string().optional(),
+  subCategory: z.string().optional(),
+  price: z.number(),
+  discount: z.coerce.number().optional(),
+  tax: z.coerce.number().optional(),
+  paymentMethod: z.enum([
+    'Dinheiro',
+    'Cartão de Crédito',
+    'Cartão de Débito',
+    'Pix',
+  ]),
+  date: z.date(),
+})
+
+export type UpdateTransaction = z.infer<typeof updateTransactionSchema>
+
+type GetTransactionsResponseType = {
+  transactions: Transaction[]
+}
+
+type CreateTransactionResponseType = {
+  transaction: Transaction
+}
+
+type UpdateTransactionResponseType = {
+  transaction: Transaction
+}
+
+type RemoveTransactionResponseType = {
+  transaction: Transaction
+}
 
 interface TransactionsContextProps {
   transactions: Transaction[]
   isLoading: boolean
-  fetchTransactions: () => Promise<Transaction[]>
-  createNewTransaction: (data: CreateTransaction) => Promise<void>
+  createTransaction: (data: CreateTransaction) => Promise<void>
+  updateTransaction: (data: UpdateTransaction) => Promise<void>
   removeTransaction: (id: string) => Promise<void>
 }
 
@@ -54,25 +90,24 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchTransactions = useCallback(async () => {
-    const response = await api.get('transactions')
-    const data = response.data as Transaction[]
+  const getTransactions = useCallback(async () => {
+    if (transactions.length > 0) {
+      return transactions
+    }
+
+    const { transactions: data } = (await (
+      await api.get('transactions')
+    ).data) as GetTransactionsResponseType
+
+    if (!data) {
+      throw new Error('Transactions not found')
+    }
 
     return data
-  }, [])
+  }, [transactions])
 
-  const setTransactionsState = useCallback(async () => {
-    fetchTransactions()
-      .then((data) => {
-        setTransactions(data)
-      })
-      .catch(() => {
-        setTransactions([])
-      })
-  }, [fetchTransactions])
-
-  const createNewTransaction = useCallback(
-    async (transaction: CreateTransaction) => {
+  const createTransaction = useCallback(
+    async (data: CreateTransaction) => {
       const {
         client,
         description,
@@ -83,22 +118,29 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
         tax,
         paymentMethod,
         date,
-      } = createTransactionSchema.parse(transaction)
+      } = createTransactionSchema.parse(data)
 
-      const { data } = await api.post('transactions', {
-        client,
-        description,
-        category,
-        subCategory,
-        price,
-        discount,
-        tax,
-        paymentMethod,
-        date,
-        createdAt: new Date(),
-      })
+      const { transaction } = (
+        await api.post('transactions', {
+          client,
+          description,
+          category,
+          subCategory,
+          price,
+          discount,
+          tax,
+          paymentMethod,
+          date,
+          createdAt: new Date(),
+          updatedAt: null,
+        })
+      ).data as CreateTransactionResponseType
 
-      setTransactions([data, ...transactions])
+      if (!transaction) {
+        throw new Error('Transaction not created')
+      }
+
+      setTransactions([transaction, ...transactions])
     },
     [transactions],
   )
@@ -114,30 +156,76 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
         throw new Error('Transaction not found')
       }
 
+      const { transaction: data } = (await api.delete(`transactions/${id}`))
+        .data as RemoveTransactionResponseType
+
+      if (!data) {
+        throw new Error('Transaction not removed')
+      }
+
       setTransactions(
         transactions.filter((transaction) => transaction.id !== id),
       )
-      await api.delete(`transactions/${id}`)
+    },
+    [transactions],
+  )
+  const updateTransaction = useCallback(
+    async (data: UpdateTransaction) => {
+      const {
+        id,
+        client,
+        description,
+        category,
+        subCategory,
+        price,
+        discount,
+        tax,
+        paymentMethod,
+        date,
+      } = updateTransactionSchema.parse(data)
+
+      const { transaction } = (
+        await api.put(`transactions/${id}`, {
+          client,
+          description,
+          category,
+          subCategory,
+          price,
+          discount,
+          tax,
+          paymentMethod,
+          date,
+        })
+      ).data as UpdateTransactionResponseType
+
+      if (!transaction) {
+        throw new Error('Transaction not updated')
+      }
+
+      setTransactions(
+        transactions.filter((item) => item.id === id && transaction),
+      )
     },
     [transactions],
   )
 
   useEffect(() => {
     if (transactions.length === 0) {
-      setTransactionsState().then(() => {
+      getTransactions().then((data) => {
+        setTransactions(data)
         setIsLoading(false)
       })
     }
-  }, [setTransactionsState, transactions])
+  }, [transactions, setTransactions, getTransactions])
 
   return (
     <TransactionsContext.Provider
       value={{
         transactions,
         isLoading,
-        fetchTransactions,
-        createNewTransaction,
+        createTransaction,
         removeTransaction,
+        updateTransaction,
       }}
     >
       {children}

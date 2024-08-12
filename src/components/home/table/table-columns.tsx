@@ -82,7 +82,7 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
   },
   {
-    id: 'Sub-categoria',
+    id: 'Subcategoria',
     accessorKey: 'subCategory',
     header: ({ column }) => (
       <div className="flex justify-start">
@@ -91,13 +91,13 @@ export const columns: ColumnDef<Transaction>[] = [
           className="gap-2"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Sub-categoria
+          Subcategoria
           <ArrowUpDown className="h-4 w-4" />
         </Button>
       </div>
     ),
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('Sub-categoria')}</div>
+      <div className="lowercase">{row.getValue('Subcategoria')}</div>
     ),
   },
   {
@@ -143,7 +143,7 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       const date = row.getValue('Data') as Date
 
-      const formatted = dayjs(date).format('LL')
+      const formatted = dayjs(date).format('lll')
 
       return <div className="text-right font-medium">{formatted}</div>
     },
