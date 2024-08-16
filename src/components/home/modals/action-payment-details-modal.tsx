@@ -21,13 +21,9 @@ import {
 } from '@/contexts/TransactionsContext'
 import { z } from '@/lib/zod'
 
-import { UpdateTransactionsForm } from '../form/update-transactions-form'
-import { PaymentDetails } from './payment-details'
+import { UpdateTransactionForm } from '../form/update-transaction-form'
+import { PaymentDetailsTable } from '../table/payment-details-table'
 import { RemoveTransactionModal } from './remove-transaction-modal'
-
-type ActionPaymentDetailsModalProps = {
-  transaction: Transaction
-}
 
 const updateTransactionSchema = z.object({
   id: z.string(),
@@ -44,15 +40,22 @@ const updateTransactionSchema = z.object({
     'Cartão de Débito',
     'Pix',
   ]),
-  date: z.date(),
+  date: z.coerce.date(),
 })
 
 export type UpdateTransaction = z.infer<typeof updateTransactionSchema>
 
+type ActionPaymentDetailsModalProps = {
+  transaction: Transaction
+  onOpenDialogChange: (value: boolean) => void
+}
+
 export const ActionPaymentDetailsModal = ({
   transaction,
+  onOpenDialogChange,
 }: ActionPaymentDetailsModalProps) => {
   const [isEdit, setIsEdit] = useState(false)
+
   const form = useForm({
     resolver: zodResolver(updateTransactionSchema),
     defaultValues: {
@@ -94,17 +97,18 @@ export const ActionPaymentDetailsModal = ({
         form.reset()
       })
       .catch(() => {
-        throw toast.warning('Erro ao atualizar a transação.')
+        toast.error('Erro ao atualizar a transação.')
       })
   }
 
   function onRemoveTransaction(id: string) {
     removeTransaction(id)
       .then(() => {
+        onOpenDialogChange(false)
         toast.success('Transação removida com sucesso.')
       })
       .catch(() => {
-        toast.warning('Erro ao remover a transação.')
+        toast.error('Erro ao remover a transação.')
       })
   }
 
@@ -118,9 +122,9 @@ export const ActionPaymentDetailsModal = ({
       <ScrollArea>
         <div className="px-4">
           {isEdit ? (
-            <UpdateTransactionsForm form={form} onSubmit={onSubmit} />
+            <UpdateTransactionForm form={form} onSubmit={onSubmit} />
           ) : (
-            <PaymentDetails transaction={transaction} />
+            <PaymentDetailsTable transaction={transaction} />
           )}
         </div>
         <ScrollBar orientation="vertical" />
@@ -133,7 +137,7 @@ export const ActionPaymentDetailsModal = ({
               Voltar
             </Button>
 
-            <Button form="transaction-form" type="submit">
+            <Button form="update-transaction-form" type="submit">
               Salvar
             </Button>
           </>

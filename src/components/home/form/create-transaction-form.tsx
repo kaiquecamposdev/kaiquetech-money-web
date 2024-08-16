@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { CalendarIcon } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 
@@ -33,66 +32,44 @@ import { TimePickerDemo } from '@/components/ui/time-picker-demo'
 import { dayjs } from '@/lib/dayjs'
 import { cn } from '@/lib/utils'
 
-import { UpdateTransaction } from '../table/action-payment-details-modal'
+import { CreateTransactionFormType } from '../modals/create-transaction-modal'
 
-type UpdateTransactionsFormProps = {
+type CreateTransactionFormProps = {
   form: UseFormReturn<
     {
-      id: string
-      client: string
       description: string
-      category: string
-      subCategory: string
       price: number
-      discount: number
-      tax: number
       paymentMethod:
         | 'Dinheiro'
         | 'Cartão de Crédito'
         | 'Cartão de Débito'
         | 'Pix'
       date: Date
+      client?: string | undefined
+      category?: string | undefined
+      subCategory?: string | undefined
+      discount?: number | undefined
+      tax?: number | undefined
     },
     any,
     undefined
   >
-  onSubmit: (values: UpdateTransaction) => void
+  onSubmit: (values: CreateTransactionFormType) => void
 }
 
-export function UpdateTransactionsForm({
+export function CreateTransactionForm({
   form,
   onSubmit,
-}: UpdateTransactionsFormProps) {
+}: CreateTransactionFormProps) {
   const methods = ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Pix']
 
   return (
     <Form {...form}>
       <form
-        id="transaction-form"
+        id="create-transaction-form"
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col gap-3"
       >
-        <FormField
-          control={form.control}
-          name={'id'}
-          render={({ field }) => (
-            <>
-              <FormItem>
-                <FormLabel>ID</FormLabel>
-                <FormControl>
-                  <Input {...field} disabled />
-                </FormControl>
-                {form.formState.errors.id ? (
-                  <FormMessage>{form.formState.errors.id.message}</FormMessage>
-                ) : (
-                  <FormDescription>
-                    O ID é um valor único que identifica a transação.
-                  </FormDescription>
-                )}
-              </FormItem>
-            </>
-          )}
-        />
         <FormField
           control={form.control}
           name={'client'}
@@ -223,7 +200,7 @@ export function UpdateTransactionsForm({
                   {...field}
                   type="number"
                   onBlur={() => {
-                    if (field.value.toString() === '')
+                    if (field.value?.toString() === '')
                       form.setValue('discount', 0)
                   }}
                 />
@@ -252,7 +229,7 @@ export function UpdateTransactionsForm({
                   {...field}
                   type="number"
                   onBlur={() => {
-                    if (field.value.toString() === '') form.setValue('tax', 0)
+                    if (field.value?.toString() === '') form.setValue('tax', 0)
                   }}
                 />
               </FormControl>
@@ -309,47 +286,7 @@ export function UpdateTransactionsForm({
           name={'date'}
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              {/* <FormLabel>Data da Transação</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={'outline'}
-                      className={cn(
-                        'w-[240px] pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground',
-                      )}
-                    >
-                      {field.value ? (
-                        dayjs(field.value).format('lll')
-                      ) : (
-                        <span>Escolha a data</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date('1900-01-01')
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              {form.formState.errors.date ? (
-                <FormMessage>{form.formState.errors.date.message}</FormMessage>
-              ) : (
-                <FormDescription>
-                  A data do momento em que a transação foi realizada.
-                </FormDescription>
-              )}
-              <FormMessage /> */}
-              <FormLabel className="text-left">DateTime</FormLabel>
+              <FormLabel className="text-left">Data da Transação</FormLabel>
               <Popover>
                 <FormControl>
                   <PopoverTrigger asChild>
@@ -378,8 +315,8 @@ export function UpdateTransactionsForm({
                   />
                   <div className="border-t border-border p-3">
                     <TimePickerDemo
-                      setDate={field.onChange}
                       date={new Date(field.value)}
+                      setDate={field.onChange}
                     />
                   </div>
                 </PopoverContent>

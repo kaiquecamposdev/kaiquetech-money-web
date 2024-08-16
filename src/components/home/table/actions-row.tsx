@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Transaction } from '@/contexts/TransactionsContext'
 
-import { ActionPaymentDetailsModal } from './action-payment-details-modal'
+import { ActionPaymentDetailsModal } from '../modals/action-payment-details-modal'
 
 type ActionsRowProps = {
   row: Row<Transaction>
@@ -46,8 +46,12 @@ export function ActionsRow({ row }: ActionsRowProps) {
           Visualizar detalhes do pagamento
         </DropdownMenuItem>
       </DropdownMenuContent>
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <ActionPaymentDetailsModal transaction={transaction} />
+        <ActionPaymentDetailsModal
+          transaction={transaction}
+          onOpenDialogChange={setIsDialogOpen}
+        />
       </Dialog>
     </DropdownMenu>
   )

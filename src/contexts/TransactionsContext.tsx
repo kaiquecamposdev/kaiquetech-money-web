@@ -1,4 +1,5 @@
 import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { createContext } from 'use-context-selector'
 import { z } from 'zod'
 
@@ -35,7 +36,7 @@ const createTransactionSchema = z.object({
     'Cartão de Débito',
     'Pix',
   ]),
-  date: z.date(),
+  date: z.coerce.date(),
 })
 
 export type CreateTransaction = z.infer<typeof createTransactionSchema>
@@ -55,10 +56,14 @@ const updateTransactionSchema = z.object({
     'Cartão de Débito',
     'Pix',
   ]),
-  date: z.date(),
+  date: z.coerce.date(),
 })
 
 export type UpdateTransaction = z.infer<typeof updateTransactionSchema>
+
+// type GetTransactionResponseType = {
+//   transaction: Transaction
+// }
 
 type GetTransactionsResponseType = {
   transactions: Transaction[]
@@ -72,9 +77,9 @@ type UpdateTransactionResponseType = {
   transaction: Transaction
 }
 
-type RemoveTransactionResponseType = {
-  transaction: Transaction
-}
+// type RemoveTransactionResponseType = {
+//   transactionDeleted: Transaction
+// }
 
 interface TransactionsContextProps {
   transactions: Transaction[]
@@ -87,25 +92,35 @@ interface TransactionsContextProps {
 export const TransactionsContext = createContext({} as TransactionsContextProps)
 
 export function TransactionsProvider({ children }: TransactionsContextType) {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    const transactionsStoredAsJSON = localStorage.getItem(
+      '@kaiquetech:transactions-state-1.0.0',
+    )
 
-  const getTransactions = useCallback(async () => {
-    if (transactions.length > 0) {
+    if (transactionsStoredAsJSON) {
+      const { transactions } = JSON.parse(transactionsStoredAsJSON)
+
       return transactions
     }
 
-    const { transactions: data } = (await (
-      await api.get('transactions')
-    ).data) as GetTransactionsResponseType
+    return []
+  })
+  const [isLoading, setIsLoading] = useState(true)
 
-    if (!data) {
-      throw new Error('Transactions not found')
+  const getTransactions = useCallback(async () => {
+    if (transactions && transactions.length > 0) {
+      return transactions
+    }
+
+    const { transactions: data } = (await api.get('transactions'))
+      .data as GetTransactionsResponseType
+
+    if (!data || data.length === 0) {
+      return []
     }
 
     return data
   }, [transactions])
-
   const createTransaction = useCallback(
     async (data: CreateTransaction) => {
       const {
@@ -141,27 +156,16 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
       }
 
       setTransactions([transaction, ...transactions])
+      localStorage.setItem(
+        'transactions',
+        JSON.stringify([transaction, ...transactions]),
+      )
     },
     [transactions],
   )
   const removeTransaction = useCallback(
     async (id: string) => {
-      const transaction = await api.get('transactions', {
-        params: {
-          id,
-        },
-      })
-
-      if (!transaction) {
-        throw new Error('Transaction not found')
-      }
-
-      const { transaction: data } = (await api.delete(`transactions/${id}`))
-        .data as RemoveTransactionResponseType
-
-      if (!data) {
-        throw new Error('Transaction not removed')
-      }
+      await api.delete(`transactions/${id}`)
 
       setTransactions(
         transactions.filter((transaction) => transaction.id !== id),
@@ -208,15 +212,24 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
     },
     [transactions],
   )
+  const fetchData = useCallback(async () => {
+    const data = await getTransactions()
+    setTransactions(data)
+  }, [getTransactions])
 
   useEffect(() => {
-    if (transactions.length === 0) {
-      getTransactions().then((data) => {
-        setTransactions(data)
-        setIsLoading(false)
-      })
+    if (!transactions || transactions.length === 0) {
+      fetchData()
+        .then(() => {
+          setIsLoading(false)
+          toast.success('Transações carregadas com sucesso.')
+        })
+        .catch(() => {
+          setIsLoading(true)
+          toast.error('Erro ao carregar as transações.')
+        })
     }
-  }, [transactions, setTransactions, getTransactions])
+  }, [transactions, fetchData])
 
   return (
     <TransactionsContext.Provider

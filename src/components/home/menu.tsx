@@ -17,9 +17,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTheme } from '@/contexts/ThemeProvider'
 
-export function Menu() {
-  const [position, setPosition] = useState('system')
+import { Dialog } from '../ui/dialog'
+import { CreateTransactionModal } from './modals/create-transaction-modal'
 
+export function Menu() {
+  const [openCreateTransactionModal, setOpenCreateTransactionModal] =
+    useState(false)
+  const [position, setPosition] = useState('system')
   const { setTheme } = useTheme()
 
   return (
@@ -30,7 +34,10 @@ export function Menu() {
       <DropdownMenuContent>
         <DropdownMenuLabel>Opções</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="gap-2">
+        <DropdownMenuItem
+          className="gap-2"
+          onSelect={() => setOpenCreateTransactionModal(true)}
+        >
           <ArrowLeftRight className="h-4 w-4" />
           Criar transação
         </DropdownMenuItem>
@@ -75,6 +82,15 @@ export function Menu() {
           </DropdownMenuPortal>
         </DropdownMenuSub>
       </DropdownMenuContent>
+
+      <Dialog
+        open={openCreateTransactionModal}
+        onOpenChange={setOpenCreateTransactionModal}
+      >
+        <CreateTransactionModal
+          setOpenCreateTransactionModal={setOpenCreateTransactionModal}
+        />
+      </Dialog>
     </DropdownMenu>
   )
 }

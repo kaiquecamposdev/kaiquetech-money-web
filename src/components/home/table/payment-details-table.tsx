@@ -11,11 +11,11 @@ import { Transaction } from '@/contexts/TransactionsContext'
 import { dayjs } from '@/lib/dayjs'
 import { formatCurrency } from '@/utils/format-currency'
 
-type PaymentDetailsProps = {
+type PaymentDetailsTableProps = {
   transaction: Transaction
 }
 
-export function PaymentDetails({ transaction }: PaymentDetailsProps) {
+export function PaymentDetailsTable({ transaction }: PaymentDetailsTableProps) {
   return (
     <>
       <Table>
