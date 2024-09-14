@@ -19,12 +19,26 @@ import { useTheme } from '@/contexts/ThemeProvider'
 
 import { Dialog } from '../ui/dialog'
 import { CreateTransactionModal } from './modals/create-transaction-modal'
+import { OptionsUploadTransactionsModal } from './modals/options-upload-transactions-modal'
+import { UploadTransactionsModal } from './modals/upload-transactions-modal'
 
 export function Menu() {
   const [openCreateTransactionModal, setOpenCreateTransactionModal] =
     useState(false)
+  const [
+    openOptionsUploadTransactionsModal,
+    setOpenOptionsUploadTransactionsModal,
+  ] = useState(false)
+  const [openUploadTransactionsModal, setOpenUploadTransactionsModal] =
+    useState(false)
+
   const [position, setPosition] = useState('system')
   const { setTheme } = useTheme()
+
+  function onOpenUploadTransactionsModal(value: boolean) {
+    setOpenOptionsUploadTransactionsModal(false)
+    setOpenUploadTransactionsModal(value)
+  }
 
   return (
     <DropdownMenu>
@@ -41,7 +55,10 @@ export function Menu() {
           <ArrowLeftRight className="h-4 w-4" />
           Criar transação
         </DropdownMenuItem>
-        <DropdownMenuItem className="gap-2">
+        <DropdownMenuItem
+          className="gap-2"
+          onSelect={() => setOpenOptionsUploadTransactionsModal(true)}
+        >
           <Sheet className="h-4 w-4" />
           Importar CSV
         </DropdownMenuItem>
@@ -89,6 +106,24 @@ export function Menu() {
       >
         <CreateTransactionModal
           setOpenCreateTransactionModal={setOpenCreateTransactionModal}
+        />
+      </Dialog>
+
+      <Dialog
+        open={openOptionsUploadTransactionsModal}
+        onOpenChange={setOpenOptionsUploadTransactionsModal}
+      >
+        <OptionsUploadTransactionsModal
+          onOpenChange={onOpenUploadTransactionsModal}
+        />
+      </Dialog>
+
+      <Dialog
+        open={openUploadTransactionsModal}
+        onOpenChange={setOpenUploadTransactionsModal}
+      >
+        <UploadTransactionsModal
+          setOpenUploadTransactionsModal={setOpenUploadTransactionsModal}
         />
       </Dialog>
     </DropdownMenu>
