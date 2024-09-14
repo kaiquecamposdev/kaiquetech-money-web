@@ -17,7 +17,7 @@ import {
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { TransactionsContext } from '@/contexts/TransactionsContext'
 
-import { CreateTransactionForm } from '../form/create-transaction-form'
+import { CreateTransactionForm } from '../forms/create-transaction-form'
 
 const createTransactionFormSchema = z.object({
   client: z.string().optional(),
@@ -81,7 +81,7 @@ export function CreateTransactionModal({
 
   useEffect(() => {
     if (form.formState.isSubmitSuccessful) {
-      setOpenCreateTransactionModal(false)
+      setOpenCreateTransactionModal(true)
       form.reset()
     }
   })
@@ -90,7 +90,7 @@ export function CreateTransactionModal({
     <>
       <DialogContent className="h-full max-h-[600px] w-full max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Adicionar transação</DialogTitle>
+          <DialogTitle>Registrar transação</DialogTitle>
           <DialogDescription>Registre os dados da venda.</DialogDescription>
         </DialogHeader>
 
