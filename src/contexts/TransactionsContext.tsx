@@ -1,9 +1,9 @@
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { createContext } from 'use-context-selector'
-import { z } from 'zod'
 
 import { api } from '@/api'
+import { z } from '@/lib/zod'
 
 interface TransactionsContextType {
   children: ReactNode
@@ -39,7 +39,51 @@ const createTransactionSchema = z.object({
   date: z.coerce.date(),
 })
 
-export type CreateTransaction = z.infer<typeof createTransactionSchema>
+const uploadTransactionsSchema = z.object({
+  file: z.instanceof(File),
+})
+
+const processTransactionsSchema = z.object({
+  filepath: z.string(),
+})
+
+const unregisteredTransactionsSchema = z.object({
+  client: z.string().optional(),
+  description: z.string().max(255),
+  category: z.string().optional(),
+  subCategory: z.string().optional(),
+  price: z.coerce.number().default(0),
+  discount: z.coerce.number().optional().default(0),
+  tax: z.coerce.number().optional().default(0),
+  paymentMethod: z.enum([
+    'Dinheiro',
+    'Cartão de Crédito',
+    'Cartão de Débito',
+    'Pix',
+  ]),
+  date: z.coerce.date(),
+})
+
+const saveTransactionsSchema = z.object({
+  unregisteredTransactions: z.array(
+    z.object({
+      client: z.string().optional(),
+      description: z.string().max(255),
+      category: z.string().optional(),
+      subCategory: z.string().optional(),
+      price: z.coerce.number().default(0),
+      discount: z.coerce.number().optional().default(0),
+      tax: z.coerce.number().optional().default(0),
+      paymentMethod: z.enum([
+        'Dinheiro',
+        'Cartão de Crédito',
+        'Cartão de Débito',
+        'Pix',
+      ]),
+      date: z.coerce.date(),
+    }),
+  ),
+})
 
 const updateTransactionSchema = z.object({
   id: z.string(),
@@ -59,11 +103,19 @@ const updateTransactionSchema = z.object({
   date: z.coerce.date(),
 })
 
-export type UpdateTransaction = z.infer<typeof updateTransactionSchema>
+export type CreateTransaction = z.infer<typeof createTransactionSchema>
 
-// type GetTransactionResponseType = {
-//   transaction: Transaction
-// }
+export type UploadTransactions = z.infer<typeof uploadTransactionsSchema>
+
+export type ProcessTransactions = z.infer<typeof processTransactionsSchema>
+
+export type SaveTransactions = z.infer<typeof saveTransactionsSchema>
+
+export type UnregisteredTransactions = z.infer<
+  typeof unregisteredTransactionsSchema
+>
+
+export type UpdateTransaction = z.infer<typeof updateTransactionSchema>
 
 type GetTransactionsResponseType = {
   transactions: Transaction[]
@@ -73,20 +125,43 @@ type CreateTransactionResponseType = {
   transaction: Transaction
 }
 
+type UploadTransactionsResponseType = {
+  message: string
+  isSuccess: boolean
+  filepath: string
+}
+
+type ProcessTransactionsResponseType = {
+  message: string
+  isSuccess: boolean
+  unregisteredTransactions: UnregisteredTransactions[]
+}
+
+type SaveTransactionsResponseType = {
+  message: string
+  isSuccess: boolean
+  transactions: Transaction[]
+}
+
 type UpdateTransactionResponseType = {
   transaction: Transaction
 }
-
-// type RemoveTransactionResponseType = {
-//   transactionDeleted: Transaction
-// }
 
 interface TransactionsContextProps {
   transactions: Transaction[]
   isLoading: boolean
   createTransaction: (data: CreateTransaction) => Promise<void>
-  updateTransaction: (data: UpdateTransaction) => Promise<void>
+  uploadTransactions: (
+    data: UploadTransactions,
+  ) => Promise<{ filepath: string }>
+  processTransactions: (
+    data: ProcessTransactions,
+  ) => Promise<{ unregisteredTransactions: UnregisteredTransactions[] }>
+  saveTransactions: (
+    data: SaveTransactions,
+  ) => Promise<{ transactions: Transaction[] }>
   removeTransaction: (id: string) => Promise<void>
+  updateTransaction: (data: UpdateTransaction) => Promise<void>
 }
 
 export const TransactionsContext = createContext({} as TransactionsContextProps)
@@ -106,7 +181,6 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
     return []
   })
   const [isLoading, setIsLoading] = useState(true)
-
   const getTransactions = useCallback(async () => {
     if (transactions && transactions.length > 0) {
       return transactions
@@ -163,6 +237,75 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
     },
     [transactions],
   )
+  const uploadTransactions = useCallback(async (data: UploadTransactions) => {
+    const { file } = uploadTransactionsSchema.parse(data)
+
+    const formData = new FormData()
+    const blob = new Blob([file], { type: file.type })
+    formData.append('file', blob, file.name)
+
+    const { message, isSuccess, filepath } = (
+      await api.post('upload', formData)
+    ).data as UploadTransactionsResponseType
+
+    if (!isSuccess) {
+      throw toast.error(message)
+    }
+
+    toast.success(message)
+
+    return {
+      filepath,
+    }
+  }, [])
+  const processTransactions = useCallback(
+    async ({ filepath }: ProcessTransactions) => {
+      const { message, isSuccess, unregisteredTransactions } = (
+        await api.post('process', {
+          filepath,
+        })
+      ).data as ProcessTransactionsResponseType
+
+      if (!isSuccess) {
+        throw toast.error(message)
+      }
+
+      toast.success(message)
+
+      return {
+        unregisteredTransactions,
+      }
+    },
+    [],
+  )
+  const saveTransactions = useCallback(
+    async ({ unregisteredTransactions }: SaveTransactions) => {
+      console.log(unregisteredTransactions)
+
+      const { message, isSuccess, transactions } = (
+        await api.post('save', {
+          unregisteredTransactions,
+        })
+      ).data as SaveTransactionsResponseType
+
+      if (!isSuccess) {
+        throw toast.error(message)
+      }
+
+      if (transactions) {
+        const transactionsPromises = transactions.map((transaction) =>
+          setTransactions((prevState) => [transaction, ...prevState]),
+        )
+
+        await Promise.all(transactionsPromises)
+
+        toast.success(message)
+      }
+
+      return { transactions }
+    },
+    [],
+  )
   const removeTransaction = useCallback(
     async (id: string) => {
       await api.delete(`transactions/${id}`)
@@ -218,7 +361,7 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
   }, [getTransactions])
 
   useEffect(() => {
-    if (!transactions || transactions.length === 0) {
+    if (transactions.length === 0) {
       fetchData()
         .then(() => {
           setIsLoading(false)
@@ -237,6 +380,9 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
         transactions,
         isLoading,
         createTransaction,
+        uploadTransactions,
+        processTransactions,
+        saveTransactions,
         removeTransaction,
         updateTransaction,
       }}
