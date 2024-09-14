@@ -21,8 +21,8 @@ import {
 } from '@/contexts/TransactionsContext'
 import { z } from '@/lib/zod'
 
-import { UpdateTransactionForm } from '../form/update-transaction-form'
-import { PaymentDetailsTable } from '../table/payment-details-table'
+import { UpdateTransactionForm } from '../forms/update-transaction-form'
+import { PaymentDetailsTable } from '../tables/payment-details-table'
 import { RemoveTransactionModal } from './remove-transaction-modal'
 
 const updateTransactionSchema = z.object({
