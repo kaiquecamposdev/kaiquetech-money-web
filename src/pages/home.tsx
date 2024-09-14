@@ -2,7 +2,7 @@ import { useContextSelector } from 'use-context-selector'
 
 import { Header } from '@/components/home/header'
 import { Summary } from '@/components/home/summary'
-import { TransactionsTable } from '@/components/home/table/transactions-table'
+import { TransactionsTable } from '@/components/home/tables/transactions-table'
 import { Loading } from '@/components/loading'
 import { TransactionsContext } from '@/contexts/TransactionsContext'
 import { cn } from '@/lib/utils'
