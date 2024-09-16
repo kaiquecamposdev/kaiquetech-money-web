@@ -14,6 +14,7 @@ import { useState } from 'react'
 import { useContextSelector } from 'use-context-selector'
 
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -31,6 +32,7 @@ import {
 } from '@/components/ui/table'
 import { TransactionsContext } from '@/contexts/TransactionsContext'
 
+import { RemoveTransactionsModal } from '../modals/remove-transactions-modal'
 import { columns } from './table-columns'
 
 export function TransactionsTable() {
@@ -39,10 +41,10 @@ export function TransactionsTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
-  const { transactions } = useContextSelector(
+  const { transactions, removeSelectedTransactions } = useContextSelector(
     TransactionsContext,
-    ({ transactions }) => {
-      return { transactions }
+    ({ transactions, removeSelectedTransactions, removeTransaction }) => {
+      return { transactions, removeSelectedTransactions, removeTransaction }
     },
   )
 
@@ -67,7 +69,7 @@ export function TransactionsTable() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filtrar descrições..."
           value={
@@ -78,32 +80,52 @@ export function TransactionsTable() {
           }
           className="max-w-md"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Colunas <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex gap-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Colunas <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="destructive"
+                disabled={table.getFilteredSelectedRowModel().rows.length <= 0}
+              >
+                Excluir ({table.getFilteredSelectedRowModel().rows.length})
+              </Button>
+            </DialogTrigger>
+            <RemoveTransactionsModal
+              transactionsId={table
+                .getFilteredSelectedRowModel()
+                .rows.map((row) => {
+                  return row.original.id
+                })}
+              removeSelectedTransactions={removeSelectedTransactions}
+            />
+          </Dialog>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

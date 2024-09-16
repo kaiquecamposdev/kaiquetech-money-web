@@ -148,7 +148,7 @@ export const ActionPaymentDetailsModal = ({
                 <Button variant="destructive">Excluir</Button>
               </DialogTrigger>
               <RemoveTransactionModal
-                transaction={transaction}
+                transactionId={transaction.id}
                 onRemoveTransaction={onRemoveTransaction}
               />
             </Dialog>

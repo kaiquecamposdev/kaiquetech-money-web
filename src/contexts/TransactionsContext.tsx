@@ -160,8 +160,9 @@ interface TransactionsContextProps {
   saveTransactions: (
     data: SaveTransactions,
   ) => Promise<{ transactions: Transaction[] }>
-  removeTransaction: (id: string) => Promise<void>
+  removeTransaction: (id: string) => Promise<{ id: string }>
   updateTransaction: (data: UpdateTransaction) => Promise<void>
+  removeSelectedTransactions: (transactionsId: string[]) => void
 }
 
 export const TransactionsContext = createContext({} as TransactionsContextProps)
@@ -189,7 +190,7 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
     const { transactions: data } = (await api.get('transactions'))
       .data as GetTransactionsResponseType
 
-    if (!data || data.length === 0) {
+    if (data.length === 0) {
       return []
     }
 
@@ -280,8 +281,6 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
   )
   const saveTransactions = useCallback(
     async ({ unregisteredTransactions }: SaveTransactions) => {
-      console.log(unregisteredTransactions)
-
       const { message, isSuccess, transactions } = (
         await api.post('save', {
           unregisteredTransactions,
@@ -306,16 +305,11 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
     },
     [],
   )
-  const removeTransaction = useCallback(
-    async (id: string) => {
-      await api.delete(`transactions/${id}`)
+  const removeTransaction = useCallback(async (id: string) => {
+    await api.delete(`transactions/${id}`)
 
-      setTransactions(
-        transactions.filter((transaction) => transaction.id !== id),
-      )
-    },
-    [transactions],
-  )
+    return { id }
+  }, [])
   const updateTransaction = useCallback(
     async (data: UpdateTransaction) => {
       const {
@@ -355,9 +349,24 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
     },
     [transactions],
   )
+  const removeSelectedTransactions = useCallback(
+    (transactionsId: string[]) => {
+      transactionsId.forEach((transactionId) => {
+        removeTransaction(transactionId)
+      })
+
+      setTransactions(
+        transactions.filter(
+          (transaction) => !transactionsId.includes(transaction.id),
+        ),
+      )
+    },
+    [transactions, removeTransaction],
+  )
   const fetchData = useCallback(async () => {
     const data = await getTransactions()
-    setTransactions(data)
+
+    if (data.length !== 0) setTransactions(data)
   }, [getTransactions])
 
   useEffect(() => {
@@ -385,6 +394,7 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
         saveTransactions,
         removeTransaction,
         updateTransaction,
+        removeSelectedTransactions,
       }}
     >
       {children}

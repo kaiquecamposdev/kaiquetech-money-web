@@ -7,15 +7,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Transaction } from '@/contexts/TransactionsContext'
 
 type RemoveTransactionModalProps = {
-  transaction: Transaction
+  transactionId: string
   onRemoveTransaction: (id: string) => void
 }
 
 export function RemoveTransactionModal({
-  transaction,
+  transactionId,
   onRemoveTransaction,
 }: RemoveTransactionModalProps) {
   return (
@@ -31,10 +30,7 @@ export function RemoveTransactionModal({
         <DialogClose asChild>
           <Button variant="ghost">Cancelar</Button>
         </DialogClose>
-        <DialogClose
-          onClick={() => onRemoveTransaction(transaction.id)}
-          asChild
-        >
+        <DialogClose onClick={() => onRemoveTransaction(transactionId)} asChild>
           <Button variant="destructive">Sim</Button>
         </DialogClose>
       </DialogFooter>
