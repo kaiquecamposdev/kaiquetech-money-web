@@ -43,8 +43,8 @@ export function TransactionsTable() {
 
   const { transactions, removeSelectedTransactions } = useContextSelector(
     TransactionsContext,
-    ({ transactions, removeSelectedTransactions, removeTransaction }) => {
-      return { transactions, removeSelectedTransactions, removeTransaction }
+    ({ transactions, removeSelectedTransactions }) => {
+      return { transactions, removeSelectedTransactions }
     },
   )
 

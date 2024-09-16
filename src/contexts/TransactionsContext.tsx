@@ -350,24 +350,32 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
     [transactions],
   )
   const removeSelectedTransactions = useCallback(
-    (transactionsId: string[]) => {
-      transactionsId.forEach((transactionId) => {
-        removeTransaction(transactionId)
-      })
-
-      setTransactions(
-        transactions.filter(
-          (transaction) => !transactionsId.includes(transaction.id),
-        ),
+    async (transactionsId: string[]) => {
+      const removeTransactionsPromise = transactionsId.forEach(
+        async (transactionId) => {
+          await removeTransaction(transactionId)
+        },
       )
+
+      await Promise.all([removeTransactionsPromise])
+
+      const transactionsFiltered = transactions.filter(
+        (transaction) => !transactionsId.includes(transaction.id),
+      )
+
+      setTransactions(transactionsFiltered)
     },
     [transactions, removeTransaction],
   )
   const fetchData = useCallback(async () => {
-    const data = await getTransactions()
+    setTimeout(async () => {
+      const data = await getTransactions()
 
-    if (data.length !== 0) setTransactions(data)
+      if (data.length !== 0) setTransactions(data)
+    }, 1000)
   }, [getTransactions])
+
+  console.log(transactions)
 
   useEffect(() => {
     if (transactions.length === 0) {
