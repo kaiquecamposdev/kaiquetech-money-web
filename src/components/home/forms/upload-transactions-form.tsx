@@ -54,7 +54,7 @@ export function UploadTransactionsForm({
                     id="planilha"
                     type="file"
                     accept=".csv"
-                    className="h-80 w-full"
+                    className="h-80 w-full cursor-pointer file:hidden"
                     value={undefined}
                     onChange={handleChange}
                   />
