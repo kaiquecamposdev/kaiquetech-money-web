@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { useContextSelector } from 'use-context-selector'
@@ -72,19 +71,14 @@ export function CreateTransactionModal({
   async function onSubmit(data: CreateTransactionFormType) {
     createTransaction(data)
       .then(() => {
+        setOpenCreateTransactionModal(false)
+        form.reset()
         toast.success('Transação cadastrada com sucesso.')
       })
       .catch(() => {
         toast.error('Erro ao cadastrar a transação.')
       })
   }
-
-  useEffect(() => {
-    if (form.formState.isSubmitSuccessful) {
-      setOpenCreateTransactionModal(true)
-      form.reset()
-    }
-  })
 
   return (
     <>
