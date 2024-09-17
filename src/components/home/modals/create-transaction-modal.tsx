@@ -31,6 +31,8 @@ const createTransactionFormSchema = z.object({
     'Cartão de Crédito',
     'Cartão de Débito',
     'Pix',
+    'Link de Pagamento',
+    'TED',
   ]),
   date: z.coerce.date(),
 })

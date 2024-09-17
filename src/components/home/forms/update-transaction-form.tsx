@@ -6,34 +6,34 @@ import { UseFormReturn } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from '@/components/ui/popover'
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select'
 import { TimePickerDemo } from '@/components/ui/time-picker-demo'
 import { dayjs } from '@/lib/dayjs'
 import { cn } from '@/lib/utils'
 
-import { UpdateTransaction } from '../tables/action-payment-details-modal'
+import { UpdateTransaction } from '../modals/action-payment-details-modal'
 
 type UpdateTransactionFormProps = {
   form: UseFormReturn<
@@ -51,6 +51,8 @@ type UpdateTransactionFormProps = {
         | 'Cartão de Crédito'
         | 'Cartão de Débito'
         | 'Pix'
+        | 'Link de Pagamento'
+        | 'TED'
       date: Date
     },
     any,
@@ -63,7 +65,14 @@ export function UpdateTransactionForm({
   form,
   onSubmit,
 }: UpdateTransactionFormProps) {
-  const methods = ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Pix']
+  const methods = [
+    'Dinheiro',
+    'Cartão de Crédito',
+    'Cartão de Débito',
+    'Pix',
+    'Link de Pagamento',
+    'TED',
+  ]
 
   return (
     <Form {...form}>

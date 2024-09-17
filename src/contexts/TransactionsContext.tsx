@@ -18,7 +18,13 @@ export type Transaction = {
   price: number
   discount?: number
   tax?: number
-  paymentMethod: 'Dinheiro' | 'Cartão de Crédito' | 'Cartão de Débito' | 'Pix'
+  paymentMethod:
+    | 'Dinheiro'
+    | 'Cartão de Crédito'
+    | 'Cartão de Débito'
+    | 'Pix'
+    | 'Link de Pagamento'
+    | 'TED'
   date: Date
 }
 
@@ -35,6 +41,8 @@ const createTransactionSchema = z.object({
     'Cartão de Crédito',
     'Cartão de Débito',
     'Pix',
+    'Link de Pagamento',
+    'TED',
   ]),
   date: z.coerce.date(),
 })
@@ -60,6 +68,8 @@ const unregisteredTransactionsSchema = z.object({
     'Cartão de Crédito',
     'Cartão de Débito',
     'Pix',
+    'Link de Pagamento',
+    'TED',
   ]),
   date: z.coerce.date(),
 })
@@ -79,6 +89,8 @@ const saveTransactionsSchema = z.object({
         'Cartão de Crédito',
         'Cartão de Débito',
         'Pix',
+        'Link de Pagamento',
+        'TED',
       ]),
       date: z.coerce.date(),
     }),
@@ -99,6 +111,8 @@ const updateTransactionSchema = z.object({
     'Cartão de Crédito',
     'Cartão de Débito',
     'Pix',
+    'Link de Pagamento',
+    'TED',
   ]),
   date: z.coerce.date(),
 })

@@ -44,6 +44,8 @@ type CreateTransactionFormProps = {
         | 'Cartão de Crédito'
         | 'Cartão de Débito'
         | 'Pix'
+        | 'Link de Pagamento'
+        | 'TED'
       date: Date
       client?: string | undefined
       category?: string | undefined
@@ -61,7 +63,14 @@ export function CreateTransactionForm({
   form,
   onSubmit,
 }: CreateTransactionFormProps) {
-  const methods = ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Pix']
+  const methods = [
+    'Dinheiro',
+    'Cartão de Crédito',
+    'Cartão de Débito',
+    'Pix',
+    'Link de Pagamento',
+    'TED',
+  ]
 
   return (
     <Form {...form}>
