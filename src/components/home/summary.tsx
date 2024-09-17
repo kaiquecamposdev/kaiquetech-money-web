@@ -19,7 +19,9 @@ export function Summary() {
         </CardHeader>
         <CardContent className="p-0">
           <h2 className="text-3xl font-bold text-secondary-foreground">
-            {formatCurrency(summary.grossRevenue)}
+            {formatCurrency(
+              summary.grossRevenue - summary.discount + summary.tax,
+            )}
           </h2>
         </CardContent>
         <CardFooter className="flex flex-row justify-between p-0">
