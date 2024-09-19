@@ -132,6 +132,7 @@ export type UnregisteredTransactions = z.infer<
 export type UpdateTransaction = z.infer<typeof updateTransactionSchema>
 
 type GetTransactionsResponseType = {
+  maxSize: number
   transactions: Transaction[]
 }
 
@@ -162,8 +163,11 @@ type UpdateTransactionResponseType = {
 }
 
 interface TransactionsContextProps {
+  maxSizeTransactions: number
   transactions: Transaction[]
   isLoading: boolean
+  page: number
+  onSetPage: (page: number) => void
   createTransaction: (data: CreateTransaction) => Promise<void>
   uploadTransactions: (
     data: UploadTransactions,
@@ -182,34 +186,33 @@ interface TransactionsContextProps {
 export const TransactionsContext = createContext({} as TransactionsContextProps)
 
 export function TransactionsProvider({ children }: TransactionsContextType) {
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const transactionsStoredAsJSON = localStorage.getItem(
-      '@kaiquetech:transactions-state-1.0.0',
-    )
-
-    if (transactionsStoredAsJSON) {
-      const { transactions } = JSON.parse(transactionsStoredAsJSON)
-
-      return transactions
-    }
-
-    return []
-  })
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [maxSizeTransactions, setMaxSizeTransactions] = useState(0)
+  const [page, setPage] = useState(1)
+
   const getTransactions = useCallback(async () => {
     if (transactions && transactions.length > 0) {
       return transactions
     }
 
-    const { transactions: data } = (await api.get('transactions'))
-      .data as GetTransactionsResponseType
+    const { maxSize, transactions: data } = (
+      await api.get('transactions', {
+        params: {
+          page,
+        },
+      })
+    ).data as GetTransactionsResponseType
 
     if (data.length === 0) {
       return []
     }
 
-    return data
-  }, [transactions])
+    return {
+      maxSize,
+      transactions: data,
+    }
+  }, [transactions, page])
   const createTransaction = useCallback(
     async (data: CreateTransaction) => {
       const {
@@ -383,16 +386,21 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
   )
   const fetchData = useCallback(async () => {
     setTimeout(async () => {
-      const data = await getTransactions()
+      const { maxSize, transactions } =
+        (await getTransactions()) as GetTransactionsResponseType
 
-      if (data.length !== 0) setTransactions(data)
-    }, 1000)
+      if (transactions.length !== 0) {
+        setMaxSizeTransactions(maxSize)
+        setTransactions(transactions)
+      }
+    }, 2000)
   }, [getTransactions])
-
-  console.log(transactions)
+  function onSetPage(page: number) {
+    setPage(page)
+  }
 
   useEffect(() => {
-    if (transactions.length === 0) {
+    if (transactions.length === 0 || page) {
       fetchData()
         .then(() => {
           setIsLoading(false)
@@ -403,7 +411,7 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
           toast.error('Erro ao carregar as transações.')
         })
     }
-  }, [transactions, fetchData])
+  }, [page, transactions, fetchData])
 
   return (
     <TransactionsContext.Provider
@@ -417,6 +425,9 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
         removeTransaction,
         updateTransaction,
         removeSelectedTransactions,
+        maxSizeTransactions,
+        page,
+        onSetPage,
       }}
     >
       {children}

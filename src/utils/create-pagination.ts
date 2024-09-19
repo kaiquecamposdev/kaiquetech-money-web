@@ -1,14 +1,10 @@
 import { Transaction } from '@/contexts/TransactionsContext'
 
-export function CreatePagination(objects: Transaction[]) {
-  let currentPage = 0
-  const perPage = 10
+export function CreatePagination(currentPage: number, objects: Transaction[]) {
+  const perPage = 20
 
-  const pagesNumber = Math.ceil(objects.length / 10)
-  const pagination: Transaction[][] = Array.from(
-    { length: pagesNumber },
-    () => [],
-  )
+  const maxPage = Math.ceil(objects.length / 20)
+  const pagination: Transaction[][] = Array.from({ length: maxPage }, () => [])
 
   for (const object of objects) {
     if (pagination[currentPage].length === perPage) {

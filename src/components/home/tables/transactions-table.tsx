@@ -31,6 +31,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { TransactionsContext } from '@/contexts/TransactionsContext'
+import { CreatePagination } from '@/utils/create-pagination'
 
 import { RemoveTransactionsModal } from '../modals/remove-transactions-modal'
 import { columns } from './table-columns'
@@ -41,10 +42,28 @@ export function TransactionsTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
-  const { transactions, removeSelectedTransactions } = useContextSelector(
+  const {
+    maxSizeTransactions,
+    transactions,
+    removeSelectedTransactions,
+    page,
+    onSetPage,
+  } = useContextSelector(
     TransactionsContext,
-    ({ transactions, removeSelectedTransactions }) => {
-      return { transactions, removeSelectedTransactions }
+    ({
+      maxSizeTransactions,
+      transactions,
+      removeSelectedTransactions,
+      page,
+      onSetPage,
+    }) => {
+      return {
+        maxSizeTransactions,
+        transactions,
+        removeSelectedTransactions,
+        page,
+        onSetPage,
+      }
     },
   )
 
@@ -66,6 +85,19 @@ export function TransactionsTable() {
       rowSelection,
     },
   })
+
+  const pagination = CreatePagination(0, transactions)
+
+  console.log(pagination)
+
+  // useEffect(() => {
+  //   if () {
+  //     onSetPage(page + 1)
+  //   }
+  // }, [page, onSetPage])
+
+  // console.log('Page the API: ' + page)
+  // console.log('Current page the table: ' + )
 
   return (
     <div className="w-full">
