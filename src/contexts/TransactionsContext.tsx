@@ -11,14 +11,15 @@ interface TransactionsContextType {
 
 export type Transaction = {
   id: string
-  client?: string
+  client_name?: string
   description: string
   category?: string
-  subCategory?: string
+  sub_category?: string
+  type: 'ENTRADA' | 'SAIDA'
   price: number
   discount?: number
   tax?: number
-  paymentMethod:
+  payment_method:
     | 'Dinheiro'
     | 'Cartão de Crédito'
     | 'Cartão de Débito'
@@ -29,14 +30,15 @@ export type Transaction = {
 }
 
 const createTransactionSchema = z.object({
-  client: z.string().optional(),
+  client_name: z.string().optional(),
   description: z.string(),
   category: z.string().optional(),
-  subCategory: z.string().optional(),
+  sub_category: z.string().optional(),
+  type: z.enum(['ENTRADA', 'SAIDA']),
   price: z.number(),
   discount: z.coerce.number().optional(),
   tax: z.coerce.number().optional(),
-  paymentMethod: z.enum([
+  payment_method: z.enum([
     'Dinheiro',
     'Cartão de Crédito',
     'Cartão de Débito',
@@ -56,19 +58,20 @@ const processTransactionsSchema = z.object({
 })
 
 const unregisteredTransactionsSchema = z.object({
-  client: z.string().optional(),
+  client_name: z.string().optional(),
   description: z.string().max(255),
   category: z.string().optional(),
-  subCategory: z.string().optional(),
+  sub_category: z.string().optional(),
+  type: z.enum(['INCOME', 'EXPENSE']),
   price: z.coerce.number().default(0),
   discount: z.coerce.number().optional().default(0),
   tax: z.coerce.number().optional().default(0),
-  paymentMethod: z.enum([
-    'Dinheiro',
-    'Cartão de Crédito',
-    'Cartão de Débito',
-    'Pix',
-    'Link de Pagamento',
+  payment_method: z.enum([
+    'CREDIT',
+    'DEBIT',
+    'MONEY',
+    'PIX',
+    'PAYMENTLINK',
     'TED',
   ]),
   date: z.coerce.date(),
@@ -77,19 +80,20 @@ const unregisteredTransactionsSchema = z.object({
 const saveTransactionsSchema = z.object({
   unregisteredTransactions: z.array(
     z.object({
-      client: z.string().optional(),
+      client_name: z.string().optional(),
       description: z.string().max(255),
       category: z.string().optional(),
-      subCategory: z.string().optional(),
+      sub_category: z.string().optional(),
+      type: z.enum(['INCOME', 'EXPENSE']),
       price: z.coerce.number().default(0),
       discount: z.coerce.number().optional().default(0),
       tax: z.coerce.number().optional().default(0),
-      paymentMethod: z.enum([
-        'Dinheiro',
-        'Cartão de Crédito',
-        'Cartão de Débito',
-        'Pix',
-        'Link de Pagamento',
+      payment_method: z.enum([
+        'CREDIT',
+        'DEBIT',
+        'MONEY',
+        'PIX',
+        'PAYMENTLINK',
         'TED',
       ]),
       date: z.coerce.date(),
@@ -99,14 +103,15 @@ const saveTransactionsSchema = z.object({
 
 const updateTransactionSchema = z.object({
   id: z.string(),
-  client: z.string().optional(),
+  client_name: z.string().optional(),
   description: z.string(),
   category: z.string().optional(),
-  subCategory: z.string().optional(),
+  sub_category: z.string().optional(),
+  type: z.enum(['ENTRADA', 'SAIDA']),
   price: z.number(),
   discount: z.coerce.number().optional(),
   tax: z.coerce.number().optional(),
-  paymentMethod: z.enum([
+  payment_method: z.enum([
     'Dinheiro',
     'Cartão de Crédito',
     'Cartão de Débito',
@@ -216,27 +221,27 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
   const createTransaction = useCallback(
     async (data: CreateTransaction) => {
       const {
-        client,
+        client_name,
         description,
         category,
-        subCategory,
+        sub_category,
         price,
         discount,
         tax,
-        paymentMethod,
+        payment_method,
         date,
       } = createTransactionSchema.parse(data)
 
       const { transaction } = (
         await api.post('transactions', {
-          client,
+          client_name,
           description,
           category,
-          subCategory,
+          sub_category,
           price,
           discount,
           tax,
-          paymentMethod,
+          payment_method,
           date,
           createdAt: new Date(),
           updatedAt: null,
@@ -248,10 +253,6 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
       }
 
       setTransactions([transaction, ...transactions])
-      localStorage.setItem(
-        'transactions',
-        JSON.stringify([transaction, ...transactions]),
-      )
     },
     [transactions],
   )
@@ -331,27 +332,27 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
     async (data: UpdateTransaction) => {
       const {
         id,
-        client,
+        client_name,
         description,
         category,
-        subCategory,
+        sub_category,
         price,
         discount,
         tax,
-        paymentMethod,
+        payment_method,
         date,
       } = updateTransactionSchema.parse(data)
 
       const { transaction } = (
         await api.put(`transactions/${id}`, {
-          client,
+          client_name,
           description,
           category,
-          subCategory,
+          sub_category,
           price,
           discount,
           tax,
-          paymentMethod,
+          payment_method,
           date,
         })
       ).data as UpdateTransactionResponseType
