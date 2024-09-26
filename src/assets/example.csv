@@ -1,2 +1,2 @@
-"client","description","category","subCategory","price","discount","tax","paymentMethod","date",
-,,,,,,,,,
+"client","description","category","sub_category","type","price","discount","tax","payment_method","date",
+,,,,"INCOME | EXPENSE",,,,"CREDIT | DEBIT | MONEY | PIX | PAYMENTLINK | TED",,
