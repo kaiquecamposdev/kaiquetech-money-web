@@ -14,19 +14,20 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { TransactionsContext } from '@/contexts/TransactionsContext'
+import { TransactionsContext } from '@/providers/transactions-provider'
 
 import { CreateTransactionForm } from '../forms/create-transaction-form'
 
 const createTransactionFormSchema = z.object({
-  client: z.string().optional(),
-  description: z.string().min(1),
+  client_name: z.string().optional(),
+  description: z.string(),
   category: z.string().optional(),
-  subCategory: z.string().optional(),
-  price: z.coerce.number().min(1),
+  sub_category: z.string().optional(),
+  type: z.enum(['ENTRADA', 'SAIDA']),
+  price: z.number(),
   discount: z.coerce.number().optional(),
   tax: z.coerce.number().optional(),
-  paymentMethod: z.enum([
+  payment_method: z.enum([
     'Dinheiro',
     'Cartão de Crédito',
     'Cartão de Débito',
@@ -51,14 +52,14 @@ export function CreateTransactionModal({
   const form = useForm<CreateTransactionFormType>({
     resolver: zodResolver(createTransactionFormSchema),
     defaultValues: {
-      client: '',
+      client_name: '',
       description: '',
       category: '',
-      subCategory: '',
+      sub_category: '',
       price: 0,
       discount: 0,
       tax: 0,
-      paymentMethod: 'Pix',
+      payment_method: 'Pix',
       date: new Date(),
     },
   })

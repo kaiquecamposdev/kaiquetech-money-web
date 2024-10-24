@@ -10,14 +10,14 @@ export function transactionsIsEqual(
   const keys = Object.keys(oldTransaction) as TransactionsKeys[]
   const values: { [key in TransactionsKeys]: boolean } = {
     id: false,
-    client: false,
+    client_name: false,
     description: false,
     category: false,
-    subCategory: false,
+    sub_category: false,
     price: false,
     discount: false,
     tax: false,
-    paymentMethod: false,
+    payment_method: false,
     date: false,
   }
 

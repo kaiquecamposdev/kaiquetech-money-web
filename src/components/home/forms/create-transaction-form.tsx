@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CalendarIcon } from 'lucide-react'
+import { Calendar as CalendarIcon } from '@phosphor-icons/react'
 import { UseFormReturn } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -39,7 +39,7 @@ type CreateTransactionFormProps = {
     {
       description: string
       price: number
-      paymentMethod:
+      payment_method:
         | 'Dinheiro'
         | 'Cartão de Crédito'
         | 'Cartão de Débito'
@@ -47,9 +47,9 @@ type CreateTransactionFormProps = {
         | 'Link de Pagamento'
         | 'TED'
       date: Date
-      client?: string | undefined
+      client_name?: string | undefined
       category?: string | undefined
-      subCategory?: string | undefined
+      sub_category?: string | undefined
       discount?: number | undefined
       tax?: number | undefined
     },
@@ -81,7 +81,7 @@ export function CreateTransactionForm({
       >
         <FormField
           control={form.control}
-          name={'client'}
+          name={'client_name'}
           render={({ field }) => (
             <>
               <FormItem>
@@ -89,9 +89,9 @@ export function CreateTransactionForm({
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
-                {form.formState.errors.client ? (
+                {form.formState.errors.client_name ? (
                   <FormMessage>
-                    {form.formState.errors.client.message}
+                    {form.formState.errors.client_name.message}
                   </FormMessage>
                 ) : (
                   <FormDescription>
@@ -150,7 +150,7 @@ export function CreateTransactionForm({
         />
         <FormField
           control={form.control}
-          name={'subCategory'}
+          name={'sub_category'}
           render={({ field }) => (
             <>
               <FormItem>
@@ -158,9 +158,9 @@ export function CreateTransactionForm({
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
-                {form.formState.errors.subCategory ? (
+                {form.formState.errors.sub_category ? (
                   <FormMessage>
-                    {form.formState.errors.subCategory.message}
+                    {form.formState.errors.sub_category.message}
                   </FormMessage>
                 ) : (
                   <FormDescription>
@@ -254,7 +254,7 @@ export function CreateTransactionForm({
         />
         <FormField
           control={form.control}
-          name={'paymentMethod'}
+          name={'payment_method'}
           render={({ field }) => (
             <FormItem {...field}>
               <FormLabel>Método de Pagamento</FormLabel>
@@ -278,9 +278,9 @@ export function CreateTransactionForm({
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {form.formState.errors.paymentMethod ? (
+              {form.formState.errors.payment_method ? (
                 <FormMessage>
-                  {form.formState.errors.paymentMethod?.message}
+                  {form.formState.errors.payment_method?.message}
                 </FormMessage>
               ) : (
                 <FormDescription>

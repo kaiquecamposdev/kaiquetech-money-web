@@ -15,11 +15,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { z } from '@/lib/zod'
 import {
   Transaction,
   TransactionsContext,
-} from '@/contexts/TransactionsContext'
-import { z } from '@/lib/zod'
+} from '@/providers/transactions-provider'
 
 import { UpdateTransactionForm } from '../forms/update-transaction-form'
 import { PaymentDetailsTable } from '../tables/payment-details-table'
@@ -27,14 +27,15 @@ import { RemoveTransactionModal } from './remove-transaction-modal'
 
 const updateTransactionSchema = z.object({
   id: z.string(),
-  client: z.string().optional(),
+  client_name: z.string().optional(),
   description: z.string(),
+  type: z.enum(['ENTRADA', 'SAIDA']),
   category: z.string().optional(),
-  subCategory: z.string().optional(),
+  sub_category: z.string().optional(),
   price: z.coerce.number(),
   discount: z.coerce.number().optional(),
   tax: z.coerce.number().optional(),
-  paymentMethod: z.enum([
+  payment_method: z.enum([
     'Dinheiro',
     'Cartão de Crédito',
     'Cartão de Débito',
@@ -62,14 +63,15 @@ export const ActionPaymentDetailsModal = ({
     resolver: zodResolver(updateTransactionSchema),
     defaultValues: {
       id: transaction.id,
-      client: transaction.client || '',
+      client: transaction.client_name || '',
+      type: transaction.type,
       description: transaction.description,
       category: transaction.category || '',
-      subCategory: transaction.subCategory || '',
+      subCategory: transaction.sub_category || '',
       price: transaction.price || 0,
       discount: transaction.discount || 0,
       tax: transaction.tax || 0,
-      paymentMethod: transaction.paymentMethod,
+      paymentMethod: transaction.payment_method,
       date: transaction.date,
     },
   })

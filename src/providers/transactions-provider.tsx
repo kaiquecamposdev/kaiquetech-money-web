@@ -29,6 +29,41 @@ export type Transaction = {
   date: Date
 }
 
+export type Summary = {
+  summary: {
+    summaryToTransactionType: {
+      count: number
+      type: 'INCOME' | 'EXPENSE'
+      discounts: number
+      taxes: number
+      amount: number
+      last_date: Date
+    }[]
+    summaryToPaymentMethod: {
+      count: number
+      payment_method:
+        | 'CREDIT'
+        | 'DEBIT'
+        | 'MONEY'
+        | 'PIX'
+        | 'PAYMENTLINK'
+        | 'TED'
+      discounts: number
+      taxes: number
+      incomes: number
+    }[]
+    summaryToMonth: {
+      year_month: string
+      count: number
+      discounts: number
+      taxes: number
+      incomes: number
+      expenses: number
+      amount: number
+    }[]
+  }
+}
+
 const createTransactionSchema = z.object({
   client_name: z.string().optional(),
   description: z.string(),
@@ -141,6 +176,41 @@ type GetTransactionsResponseType = {
   transactions: Transaction[]
 }
 
+type GetSummaryResponseType = {
+  summary: {
+    summaryToTransactionType: {
+      count: number
+      type: 'INCOME' | 'EXPENSE'
+      discounts: number
+      taxes: number
+      amount: number
+      last_date: Date
+    }[]
+    summaryToPaymentMethod: {
+      count: number
+      payment_method:
+        | 'CREDIT'
+        | 'DEBIT'
+        | 'MONEY'
+        | 'PIX'
+        | 'PAYMENTLINK'
+        | 'TED'
+      discounts: number
+      taxes: number
+      incomes: number
+    }[]
+    summaryToMonth: {
+      year_month: string
+      count: number
+      discounts: number
+      taxes: number
+      incomes: number
+      expenses: number
+      amount: number
+    }[]
+  }
+}
+
 type CreateTransactionResponseType = {
   transaction: Transaction
 }
@@ -170,6 +240,7 @@ type UpdateTransactionResponseType = {
 interface TransactionsContextProps {
   maxSizeTransactions: number
   transactions: Transaction[]
+  summary: Summary
   isLoading: boolean
   page: number
   onSetPage: (page: number) => void
@@ -192,6 +263,13 @@ export const TransactionsContext = createContext({} as TransactionsContextProps)
 
 export function TransactionsProvider({ children }: TransactionsContextType) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [summary, setSummary] = useState<Summary>({
+    summary: {
+      summaryToTransactionType: [],
+      summaryToPaymentMethod: [],
+      summaryToMonth: [],
+    },
+  } as Summary)
   const [isLoading, setIsLoading] = useState(true)
   const [maxSizeTransactions, setMaxSizeTransactions] = useState(0)
   const [page, setPage] = useState(1)
@@ -218,6 +296,12 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
       transactions: data,
     }
   }, [transactions, page])
+  const getSummary = useCallback(async () => {
+    const summary = (await api.get('/transactions/summary'))
+      .data as GetSummaryResponseType
+
+    return summary
+  }, [])
   const createTransaction = useCallback(
     async (data: CreateTransaction) => {
       const {
@@ -411,12 +495,22 @@ export function TransactionsProvider({ children }: TransactionsContextType) {
           setIsLoading(true)
           toast.error('Erro ao carregar as transações.')
         })
+
+      getSummary()
+        .then((data) => {
+          setSummary(data)
+          toast.success('Resumo carregado com sucesso.')
+        })
+        .catch(() => {
+          toast.error('Erro ao carregar o resumo.')
+        })
     }
-  }, [page, transactions, fetchData])
+  }, [page, transactions, fetchData, getSummary])
 
   return (
     <TransactionsContext.Provider
       value={{
+        summary,
         transactions,
         isLoading,
         createTransaction,

@@ -1,5 +1,4 @@
 import { Row } from '@tanstack/react-table'
-import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -12,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Transaction } from '@/contexts/TransactionsContext'
+import { Transaction } from '@/providers/transactions-provider'
 
 import { ActionPaymentDetailsModal } from '../modals/action-payment-details-modal'
 
@@ -27,9 +26,9 @@ export function ActionsRow({ row }: ActionsRowProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button variant="ghost" className="size-8 p-0">
           <span className="sr-only">Abrir menu</span>
-          <MoreHorizontal className="h-4 w-4" />
+          {/* <MoreHorizontal className="size-4" /> */}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

@@ -1,3 +1,4 @@
+import { CaretDown } from '@phosphor-icons/react'
 import {
   ColumnFiltersState,
   flexRender,
@@ -9,7 +10,6 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table'
-import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { useContextSelector } from 'use-context-selector'
 
@@ -30,7 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { TransactionsContext } from '@/contexts/TransactionsContext'
+import { TransactionsContext } from '@/providers/transactions-provider'
 import { CreatePagination } from '@/utils/create-pagination'
 
 import { RemoveTransactionsModal } from '../modals/remove-transactions-modal'
@@ -88,8 +88,6 @@ export function TransactionsTable() {
 
   const pagination = CreatePagination(0, transactions)
 
-  console.log(pagination)
-
   // useEffect(() => {
   //   if () {
   //     onSetPage(page + 1)
@@ -116,7 +114,7 @@ export function TransactionsTable() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
-                Colunas <ChevronDown className="ml-2 h-4 w-4" />
+                Colunas <CaretDown className="ml-2 size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

@@ -7,8 +7,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Transaction } from '@/contexts/TransactionsContext'
 import { dayjs } from '@/lib/dayjs'
+import { Transaction } from '@/providers/transactions-provider'
 import { formatCurrency } from '@/utils/format-currency'
 
 type PaymentDetailsTableProps = {
@@ -26,7 +26,7 @@ export function PaymentDetailsTable({ transaction }: PaymentDetailsTableProps) {
           </TableRow>
           <TableRow>
             <TableCell>Cliente:</TableCell>
-            <TableCell>{transaction.client}</TableCell>
+            <TableCell>{transaction.client_name}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Descrição:</TableCell>
@@ -38,7 +38,7 @@ export function PaymentDetailsTable({ transaction }: PaymentDetailsTableProps) {
           </TableRow>
           <TableRow>
             <TableCell>Subcategoria:</TableCell>
-            <TableCell>{transaction.subCategory}</TableCell>
+            <TableCell>{transaction.sub_category}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Valor:</TableCell>

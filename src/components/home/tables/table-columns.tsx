@@ -1,10 +1,10 @@
+import { ArrowsDownUp } from '@phosphor-icons/react'
 import { ColumnDef } from '@tanstack/react-table'
 import dayjs from 'dayjs'
-import { ArrowUpDown } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Transaction } from '@/contexts/TransactionsContext'
+import { Transaction } from '@/providers/transactions-provider'
 import { formatCurrency } from '@/utils/format-currency'
 
 import { ActionsRow } from './actions-row'
@@ -54,7 +54,7 @@ export const columns: ColumnDef<Transaction>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Descrição
-          <ArrowUpDown className="h-4 w-4" />
+          <ArrowsDownUp className="size-4" />
         </Button>
       </div>
     ),
@@ -73,7 +73,7 @@ export const columns: ColumnDef<Transaction>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Categoria
-          <ArrowUpDown className="h-4 w-4" />
+          <ArrowsDownUp className="size-4" />
         </Button>
       </div>
     ),
@@ -92,7 +92,7 @@ export const columns: ColumnDef<Transaction>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Subcategoria
-          <ArrowUpDown className="h-4 w-4" />
+          <ArrowsDownUp className="size-4" />
         </Button>
       </div>
     ),
@@ -111,7 +111,7 @@ export const columns: ColumnDef<Transaction>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Valor
-          <ArrowUpDown className="h-4 w-4" />
+          <ArrowsDownUp className="size-4" />
         </Button>
       </div>
     ),
@@ -136,7 +136,7 @@ export const columns: ColumnDef<Transaction>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Data
-          <ArrowUpDown className="h-4 w-4" />
+          <ArrowsDownUp className="size-4" />
         </Button>
       </div>
     ),

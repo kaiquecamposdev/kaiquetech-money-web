@@ -1,4 +1,9 @@
-import { ArrowLeftRight, MenuIcon, PaintBucketIcon, Sheet } from 'lucide-react'
+import {
+  ArrowsLeftRight,
+  List,
+  PaintBucket,
+  Table,
+} from '@phosphor-icons/react'
 import { useState } from 'react'
 
 import {
@@ -15,7 +20,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useTheme } from '@/contexts/ThemeProvider'
+import { useTheme } from '@/providers/theme-provider'
 
 import { Dialog } from '../ui/dialog'
 import { CreateTransactionModal } from './modals/create-transaction-modal'
@@ -43,31 +48,31 @@ export function Menu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <MenuIcon className="h-8 w-8" />
+        <List className="size-8" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>Opções</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="gap-2"
+          className="flex items-center gap-2"
           onSelect={() => setOpenCreateTransactionModal(true)}
         >
-          <ArrowLeftRight className="h-4 w-4" />
+          <ArrowsLeftRight className="size-4" />
           Criar transação
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="gap-2"
+          className="flex items-center gap-2"
           onSelect={() => setOpenOptionsUploadTransactionsModal(true)}
         >
-          <Sheet className="h-4 w-4" />
+          <Table className="size-4" />
           Importar CSV
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="gap-2">
-            <PaintBucketIcon className="h-4 w-4" />
+          <DropdownMenuSubTrigger className="flex items-center gap-2">
+            <PaintBucket className="size-4" />
             Alterar tema
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>

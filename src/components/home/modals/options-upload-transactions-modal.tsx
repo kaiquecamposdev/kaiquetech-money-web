@@ -1,4 +1,4 @@
-import { ChevronRight, Download, Upload } from 'lucide-react'
+import { CaretRight, Download, Upload } from '@phosphor-icons/react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -27,14 +27,14 @@ export function OptionsUploadTransactionsModal({
           </DialogDescription>
         </DialogHeader>
 
-        <Button variant="ghost" className="p-10">
+        <Button variant="ghost" size="lg">
           <a
             href="/src/assets/example.csv"
             className="flex w-full items-center justify-between gap-2"
             download
           >
             <div className="rounded-full border border-muted-foreground p-1">
-              <Download className="h-8 w-8 text-secondary-foreground" />
+              <Download className="size-8 text-secondary-foreground" />
             </div>
             <div>
               <h2 className="bold text-left text-secondary-foreground">
@@ -44,16 +44,17 @@ export function OptionsUploadTransactionsModal({
                 Configure a planilha com as categorias e produtos.
               </p>
             </div>
-            <ChevronRight className="h-4 w-4 text-secondary-foreground" />
+            <CaretRight className="size-4 text-secondary-foreground" />
           </a>
         </Button>
         <Button
-          className="flex items-center justify-between gap-2 p-10"
+          className="flex items-center justify-between gap-2"
           variant="ghost"
+          size="lg"
           onClick={() => onOpenChange(true)}
         >
           <div className="rounded-full border border-muted-foreground p-1">
-            <Upload className="h-8 w-8 text-secondary-foreground" />
+            <Upload className="size-8 text-secondary-foreground" />
           </div>
 
           <div>
@@ -65,7 +66,7 @@ export function OptionsUploadTransactionsModal({
             </p>
           </div>
 
-          <ChevronRight className="h-4 w-4 text-secondary-foreground" />
+          <CaretRight className="size-4 text-secondary-foreground" />
         </Button>
 
         <DialogFooter></DialogFooter>

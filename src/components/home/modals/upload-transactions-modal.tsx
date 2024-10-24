@@ -11,8 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { TransactionsContext } from '@/contexts/TransactionsContext'
 import { z } from '@/lib/zod'
+import { TransactionsContext } from '@/providers/transactions-provider'
 
 import { UploadTransactionsForm } from '../forms/upload-transactions-form'
 

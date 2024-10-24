@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { CalendarIcon } from 'lucide-react'
+import { Calendar as CalendarIcon } from '@phosphor-icons/react'
 import { UseFormReturn } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -41,6 +41,7 @@ type UpdateTransactionFormProps = {
       id: string
       client: string
       description: string
+      type: 'ENTRADA' | 'SAIDA'
       category: string
       subCategory: string
       price: number
